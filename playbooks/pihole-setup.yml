@@ -1,0 +1,20 @@
+---
+# playbooks/pihole-setup.yml
+# Deploys Pi-hole. Unbound is set up first automatically via the
+# pihole_dns → unbound_dns meta dependency; no need to run unbound-setup.yml
+# separately beforehand.
+#
+# Usage:
+#   ansible-playbook playbooks/pihole-setup.yml
+#
+# Tag reference:
+#   install    — run Pi-hole unattended installer
+#   configure  — deploy dnsmasq upstream config, ensure FTL running
+#   pihole     — all Pi-hole tasks
+#   unbound    — all Unbound tasks (from dependency role)
+#   update     — refresh root hints + internal DNS zone only
+
+- hosts: piholes
+  become: true
+  roles:
+    - pihole_dns

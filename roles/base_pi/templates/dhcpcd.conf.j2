@@ -1,0 +1,16 @@
+# /etc/dhcpcd.conf — managed by Ansible (base_pi role)
+# Used on Bullseye and older Raspbian (dhcpcd active).
+hostname
+clientid
+persistent
+option rapid_commit
+option domain_name_servers, domain_name, domain_search, host_name
+option classless_static_routes
+option interface_mtu
+require dhcp_server_identifier
+slaac private
+
+interface eth0
+static ip_address={{ pi_static_ip }}/24
+static routers={{ home_gateway }}
+static domain_name_servers={{ home_dns_primary }} {{ home_dns_fallback }}

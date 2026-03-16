@@ -1,0 +1,15 @@
+---
+# BUG FIXED: dest was directory path — now full filename.
+# BUG FIXED: access-control added so pi-hole can reach unbound on loopback.
+
+- name: Deploy pi-hole.conf unbound configuration
+  ansible.builtin.template:
+    src: pi-hole.conf.j2
+    dest: /etc/unbound/unbound.conf.d/pi-hole.conf
+    owner: root
+    group: root
+    mode: '0644'
+    backup: true
+  become: true
+  notify: restart unbound
+  tags: [unbound, configure]

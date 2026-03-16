@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  author: home-ansible
+  description: "Docker CE installation — Debian/Raspbian with correct repo URLs"
+  min_ansible_version: "2.10"
+dependencies:
+  - role: base_packages

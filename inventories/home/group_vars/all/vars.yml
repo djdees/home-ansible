@@ -1,0 +1,48 @@
+---
+# inventories/home/group_vars/all/vars.yml
+# Variables that apply to every host in the inventory.
+# Secrets live in vault.yml alongside this file.
+
+# ── Network ──────────────────────────────────────────────────────────────────
+home_gateway:      "192.168.1.5"
+home_domain:       "home.arpa"
+home_dns_primary:  "192.168.1.8"   # pihole
+home_dns_fallback: "1.1.1.1"
+
+# ── Locale / time ────────────────────────────────────────────────────────────
+home_timezone: "America/Chicago"
+
+# ── Users ────────────────────────────────────────────────────────────────────
+# Bootstrap user created during imaging. Used by Ansible for initial runs.
+# Removed from the system once djdees is confirmed working.
+bootstrap_user: "fixer"
+
+# Personal user — created by the base_user role with passwordless sudo.
+personal_user:       "djdees"
+personal_user_group: "djdees"
+
+# ── SSH ──────────────────────────────────────────────────────────────────────
+ssh_allow_users:
+  - fixer
+  - djdees
+ssh_password_auth:    "no"
+ssh_sftp_server_path: "/usr/lib/openssh/sftp-server"   # Debian/Raspbian path
+
+# ── Shell ────────────────────────────────────────────────────────────────────
+# Set to 'zsh' when ready to migrate; user_dotfiles role respects this.
+user_shell: "bash"
+
+# ── NTP ──────────────────────────────────────────────────────────────────────
+ntp_servers:
+  - "0.pool.ntp.org"
+  - "1.time.nist.gov"
+  - "2.time.cloudflare.com"
+ntp_fallback_servers:
+  - "0.debian.pool.ntp.org"
+  - "1.debian.pool.ntp.org"
+  - "2.debian.pool.ntp.org"
+  - "3.debian.pool.ntp.org"
+
+# ── WiFi — plaintext refs to vault vars ──────────────────────────────────────
+wifi_ssid: "{{ vault_wifi_ssid }}"
+wifi_psk:  "{{ vault_wifi_psk }}"

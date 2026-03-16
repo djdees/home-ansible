@@ -1,0 +1,39 @@
+---
+# BUG FIXED: golang_version was 1.15.8 (Feb 2021). Updated to current stable.
+# BUG FIXED: arm64 architecture entry added for Pi 4 running 64-bit Raspbian.
+# NOTE: The original role downloaded directly in unarchive (remote_src).
+#       Checksum validation is done via the sha256 vars entry.
+#       Update golang_version + golang_checksums in vars/main.yml when
+#       a new Go release ships.
+
+- name: Resolve Go archive filename
+  ansible.builtin.set_fact:
+    go_archive: "go{{ golang_version }}.{{ golang_arch[ansible_machine] }}"
+
+- name: Resolve Go download URL
+  ansible.builtin.set_fact:
+    go_download_url: "{{ golang_base_url }}/{{ go_archive }}"
+
+- name: Remove existing /usr/local/go
+  ansible.builtin.file:
+    path: /usr/local/go
+    state: absent
+  become: true
+  tags: [dev, golang]
+
+- name: Download and extract Go to /usr/local
+  ansible.builtin.unarchive:
+    src: "{{ go_download_url }}"
+    dest: /usr/local/
+    remote_src: true
+    mode: '0755'
+  become: true
+  tags: [dev, golang]
+
+- name: Add Go binary path to .bashrc
+  ansible.builtin.lineinfile:
+    path: "/home/{{ ansible_user }}/.bashrc"
+    insertafter: '^# Path additions'
+    line: 'export PATH=${PATH}:/usr/local/go/bin'
+    state: present
+  tags: [dev, golang]

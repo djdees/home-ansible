@@ -1,0 +1,63 @@
+---
+# BUG FIXED: state: latest → state: present on all packages.
+# BUG FIXED: 'Restart cups' echo task removed — cupsd.conf template task
+#            notifies the handler directly instead.
+# BUG FIXED: individual apt tasks for hplip/hplip-data/hpijs-ppds collapsed
+#            into a single apt task — cleaner and only one apt invocation.
+
+- name: Install CUPS and HP printer drivers
+  ansible.builtin.apt:
+    name:
+      - cups
+      - hplip
+      - hplip-data
+      - hpijs-ppds
+    state: present
+    update_cache: true
+  become: true
+  tags: [cups, install]
+
+- name: Deploy cupsd.conf
+  ansible.builtin.template:
+    src: cupsd.conf.j2
+    dest: /etc/cups/cupsd.conf
+    owner: root
+    group: root
+    mode: '0644'
+    backup: true
+  become: true
+  notify: restart cups
+  tags: [cups, configure]
+
+- name: Deploy cups-browsed.conf
+  ansible.builtin.template:
+    src: cups-browsed.conf.j2
+    dest: /etc/cups/cups-browsed.conf
+    owner: root
+    group: root
+    mode: '0644'
+    backup: true
+  become: true
+  notify: restart cups
+  tags: [cups, configure]
+
+- name: Deploy cups-files.conf
+  ansible.builtin.template:
+    src: cups-files.conf.j2
+    dest: /etc/cups/cups-files.conf
+    owner: root
+    group: root
+    mode: '0644'
+    backup: true
+  become: true
+  notify: restart cups
+  tags: [cups, configure]
+
+- name: Enable and start CUPS
+  ansible.builtin.systemd:
+    name: cups
+    enabled: true
+    state: started
+    daemon_reload: true
+  become: true
+  tags: [cups, configure]

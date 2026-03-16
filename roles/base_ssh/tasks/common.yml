@@ -1,0 +1,32 @@
+---
+# BUG FIXED: sshd_config converted from a static file to a template so that
+#            AllowUsers, PasswordAuthentication, and sftp-server path are all
+#            variables driven from group_vars — not hardcoded.
+# BUG FIXED: sftp-server path was /usr/libexec/openssh/sftp-server (RHEL).
+#            Default is now /usr/lib/openssh/sftp-server (Debian/Raspbian).
+#            Override ssh_sftp_server_path in group_vars for RHEL hosts.
+
+- name: Deploy SSH banner
+  ansible.builtin.copy:
+    src: issue.net
+    dest: /etc/issue.net
+    owner: root
+    group: root
+    mode: '0644'
+    backup: true
+    force: true
+  become: true
+  tags: [ssh, setup]
+
+- name: Deploy sshd_config
+  ansible.builtin.template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: '0640'
+    backup: true
+    validate: /usr/sbin/sshd -t -f %s
+  become: true
+  notify: restart sshd
+  tags: [ssh, setup]

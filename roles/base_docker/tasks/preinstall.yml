@@ -1,0 +1,14 @@
+---
+# BUG FIXED: become: true added — package removal requires privilege escalation.
+
+- name: Remove legacy Docker packages
+  ansible.builtin.package:
+    name:
+      - docker
+      - docker-engine
+      - docker.io
+      - containerd
+      - runc
+    state: absent
+  become: true
+  tags: [docker, install]

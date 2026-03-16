@@ -1,0 +1,29 @@
+---
+# base_pi/tasks/network_dhcpcd.yml
+# Sets a static IP via dhcpcd.conf.
+# Used on: Bullseye and older Raspbian where dhcpcd is the active
+#          network service.
+
+- name: Deploy dhcpcd.conf with static IP
+  ansible.builtin.template:
+    src: dhcpcd.conf.j2
+    dest: /etc/dhcpcd.conf
+    owner: root
+    group: root
+    mode: '0644'
+    backup: true
+  become: true
+  notify: restart dhcpcd
+  tags: [base_pi, network, setup]
+
+- name: Deploy wpa_supplicant.conf for WiFi
+  ansible.builtin.template:
+    src: wpa_supplicant.conf.j2
+    dest: /etc/wpa_supplicant/wpa_supplicant.conf
+    owner: root
+    group: root
+    mode: '0600'
+    backup: true
+  become: true
+  when: wifi_ssid is defined and wifi_psk is defined
+  tags: [base_pi, network, setup, wifi]

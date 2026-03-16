@@ -1,0 +1,23 @@
+---
+# base_pi/tasks/debian.yml
+# Deploys the correct sources.list for Raspberry Pi OS Bookworm and
+# refreshes the apt cache afterward to catch any repo changes.
+
+- name: Deploy Raspberry Pi OS Bookworm sources.list
+  ansible.builtin.template:
+    src: sources.list.j2
+    dest: /etc/apt/sources.list
+    owner: root
+    group: root
+    mode: '0644'
+    backup: true
+  become: true
+  register: sources_result
+  tags: [base_pi, setup]
+
+- name: Refresh apt cache after sources.list update
+  ansible.builtin.apt:
+    update_cache: true
+  become: true
+  when: sources_result.changed
+  tags: [base_pi, setup]

@@ -1,0 +1,76 @@
+---
+# pdf_server: serves a local PDF/media directory over HTTP via Apache.
+# No OS-family branching needed — apache2 is Debian-specific in practice.
+
+- name: Ensure document root exists
+  ansible.builtin.file:
+    path: "{{ pdf_remote_content }}/html"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0775'
+  become: true
+  tags: [pdf_server, install]
+
+- name: Install Apache2
+  ansible.builtin.apt:
+    name: apache2
+    state: present
+    update_cache: true
+  become: true
+  tags: [pdf_server, install]
+
+- name: Deploy Apache virtualhost config
+  ansible.builtin.template:
+    src: apache.conf.j2
+    dest: /etc/apache2/sites-available/pdf_server.conf
+    owner: root
+    group: root
+    mode: '0644'
+    backup: true
+  become: true
+  notify: restart apache2
+  tags: [pdf_server, configure]
+
+- name: Enable pdf_server site
+  ansible.builtin.command:
+    cmd: a2ensite pdf_server.conf
+  become: true
+  notify: restart apache2
+  changed_when: false
+  tags: [pdf_server, configure]
+
+- name: Disable default Apache site
+  ansible.builtin.command:
+    cmd: a2dissite 000-default.conf
+  become: true
+  notify: restart apache2
+  changed_when: false
+  tags: [pdf_server, configure]
+
+- name: Enable Apache mod_autoindex (directory listings)
+  ansible.builtin.command:
+    cmd: a2enmod autoindex
+  become: true
+  notify: restart apache2
+  changed_when: false
+  tags: [pdf_server, configure]
+
+- name: Bind-mount local PDF content into document root
+  ansible.posix.mount:
+    path: "{{ pdf_remote_content }}/html"
+    src: "{{ pdf_local_content }}"
+    opts: bind
+    state: mounted
+    fstype: none
+  become: true
+  tags: [pdf_server, configure]
+
+- name: Enable and start Apache2
+  ansible.builtin.systemd:
+    name: apache2
+    enabled: true
+    state: started
+    daemon_reload: true
+  become: true
+  tags: [pdf_server, configure]

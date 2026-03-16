@@ -1,0 +1,6 @@
+---
+galaxy_info:
+  author: home-ansible
+  description: "SSH hardening — templated sshd_config, banner"
+  min_ansible_version: "2.10"
+dependencies: []

@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  author: home-ansible
+  description: "Telegraf metrics agent — multi-arch, task ordering fixed"
+  min_ansible_version: "2.10"
+dependencies:
+  - role: base_packages

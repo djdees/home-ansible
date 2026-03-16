@@ -1,0 +1,27 @@
+---
+# BUG FIXED: was duplicated verbatim in base_linux, base_pi, and base_dev.
+# BUG FIXED: update-cache=yes (legacy kv syntax) → update_cache: true
+# BUG FIXED: cache_valid_time added — skips update if cache < 1hr old,
+#            preventing three sequential cache updates in a single play.
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+  tags: [packages, install]
+
+- name: Install base packages
+  ansible.builtin.apt:
+    name: "{{ base_packages_list }}"
+    state: present
+  become: true
+  tags: [packages, install]
+
+- name: Remove unused packages
+  ansible.builtin.apt:
+    autoremove: true
+    purge: true
+  become: true
+  changed_when: false
+  tags: [packages, install]

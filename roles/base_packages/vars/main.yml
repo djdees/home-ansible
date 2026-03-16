@@ -1,0 +1,11 @@
+---
+# Packages installed on every managed host.
+# BUG FIXED: python-pip (Python 2, EOL) removed.
+base_packages_list:
+  - git
+  - curl
+  - vim
+  - python3
+  - python3-pip
+  - python3-venv
+  - dnsutils

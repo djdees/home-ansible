@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  author: home-ansible
+  description: "Developer tools — Go, tmux, jq, yamllint, shellcheck"
+  min_ansible_version: "2.10"
+dependencies:
+  - role: base_packages

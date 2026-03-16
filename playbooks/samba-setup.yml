@@ -1,0 +1,11 @@
+---
+# playbooks/samba-setup.yml
+# Installs and configures Samba on print servers.
+#
+# Usage:
+#   ansible-playbook playbooks/samba-setup.yml
+
+- hosts: print_servers
+  become: true
+  roles:
+    - base_samba

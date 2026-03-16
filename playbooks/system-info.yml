@@ -1,0 +1,27 @@
+---
+# playbooks/system-info.yml
+# Prints a diagnostic summary of every host — useful for confirming
+# facts (arch, OS, RAM) before running other playbooks.
+# Does not make any changes; safe to run at any time.
+#
+# Usage:
+#   ansible-playbook playbooks/system-info.yml
+#   ansible-playbook playbooks/system-info.yml --limit piholes
+
+- name: System info
+  hosts: all
+  gather_facts: true
+  become: false
+  tasks:
+    - name: Print system facts
+      ansible.builtin.debug:
+        msg:
+          - "Host:               {{ inventory_hostname }}"
+          - "IP:                 {{ ansible_host }}"
+          - "OS family:          {{ ansible_os_family }}"
+          - "Distribution:       {{ ansible_distribution }} {{ ansible_distribution_release }}"
+          - "Architecture:       {{ ansible_machine }}"
+          - "Total RAM (GB):     {{ (ansible_memtotal_mb / 1024) | round(1) }}"
+          - "CPU cores:          {{ ansible_processor_cores }}"
+          - "Processor count:    {{ ansible_processor_count }}"
+          - "Timezone:           {{ ansible_date_time.tz }}"

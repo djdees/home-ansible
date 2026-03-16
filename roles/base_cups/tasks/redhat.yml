@@ -1,0 +1,6 @@
+---
+# RedHat CUPS support is a stub — implement when a RedHat print server
+# is added to the inventory.
+- name: CUPS on RedHat not yet implemented
+  ansible.builtin.debug:
+    msg: "base_cups RedHat tasks not yet implemented."

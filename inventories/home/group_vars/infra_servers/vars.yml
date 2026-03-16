@@ -1,0 +1,4 @@
+---
+# inventories/home/group_vars/infra_servers/vars.yml
+ansible_user:  djdees
+ansible_group: djdees

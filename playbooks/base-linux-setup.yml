@@ -1,0 +1,17 @@
+---
+# playbooks/base-linux-setup.yml
+# Base configuration for Linux servers and desktops (infra_servers).
+# Do NOT run against Pi nodes — use base-pi-setup.yml for those.
+#
+# Usage:
+#   ansible-playbook playbooks/base-linux-setup.yml
+#   ansible-playbook playbooks/base-linux-setup.yml --limit hunin --ask-vault-pass
+
+- name: Base Linux server/desktop setup
+  hosts: infra_servers
+  become: true
+  roles:
+    - base_linux
+    - base_user
+    - user_dotfiles
+    - base_ssh

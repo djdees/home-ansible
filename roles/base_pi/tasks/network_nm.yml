@@ -1,0 +1,32 @@
+---
+# base_pi/tasks/network_nm.yml
+# Sets a static IP via NetworkManager (nmcli).
+# Used on: Bookworm Pis, Ubuntu, Lubuntu, and any host where
+#          NetworkManager is the active network service.
+
+- name: Set static IP via NetworkManager
+  ansible.builtin.command:
+    cmd: >
+      nmcli connection modify "{{ nm_connection_name }}"
+      ipv4.method manual
+      ipv4.addresses {{ pi_static_ip }}/24
+      ipv4.gateway {{ home_gateway }}
+      ipv4.dns "{{ home_dns_primary }} {{ home_dns_fallback }}"
+  become: true
+  tags: [base_pi, network, setup]
+
+- name: Bring connection up to apply static IP
+  ansible.builtin.command:
+    cmd: nmcli connection up "{{ nm_connection_name }}"
+  become: true
+  tags: [base_pi, network, setup]
+
+- name: Configure WiFi via NetworkManager
+  ansible.builtin.command:
+    cmd: >
+      nmcli device wifi connect "{{ wifi_ssid }}"
+      password "{{ wifi_psk }}"
+  become: true
+  when: wifi_ssid is defined and wifi_psk is defined
+  ignore_errors: true
+  tags: [base_pi, network, setup, wifi]

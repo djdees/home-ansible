@@ -1,0 +1,27 @@
+---
+# base_pi/tasks/network_networkd.yml
+# Sets a static IP via systemd-networkd .network file.
+# Used on: minimal Debian/Ubuntu server installs where systemd-networkd
+#          is the active network service.
+
+- name: Ensure /etc/systemd/network exists
+  ansible.builtin.file:
+    path: /etc/systemd/network
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+  tags: [base_pi, network, setup]
+
+- name: Deploy systemd-networkd static IP config
+  ansible.builtin.template:
+    src: 10-static.network.j2
+    dest: /etc/systemd/network/10-static.network
+    owner: root
+    group: root
+    mode: '0644'
+    backup: true
+  become: true
+  notify: restart systemd-networkd
+  tags: [base_pi, network, setup]

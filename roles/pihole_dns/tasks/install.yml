@@ -1,0 +1,48 @@
+---
+- name: Ensure /etc/pihole exists
+  ansible.builtin.file:
+    path: /etc/pihole
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+  tags: [pihole, install]
+
+- name: Deploy setupVars.conf for unattended install
+  ansible.builtin.template:
+    src: setupVars.conf.j2
+    dest: /etc/pihole/setupVars.conf
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  tags: [pihole, install]
+
+- name: Check if Pi-hole is already installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/pihole
+  register: pihole_binary
+  tags: [pihole, install]
+
+- name: Download Pi-hole installer
+  ansible.builtin.get_url:
+    url: "https://install.pi-hole.net"
+    dest: /tmp/basic-install.sh
+    mode: '0755'
+    force: true
+  when: not pihole_binary.stat.exists
+  tags: [pihole, install]
+
+- name: Run Pi-hole unattended installer
+  ansible.builtin.command:
+    cmd: bash /tmp/basic-install.sh --unattended
+  become: true
+  when: not pihole_binary.stat.exists
+  tags: [pihole, install]
+
+- name: Remove Pi-hole installer script
+  ansible.builtin.file:
+    path: /tmp/basic-install.sh
+    state: absent
+  tags: [pihole, install]

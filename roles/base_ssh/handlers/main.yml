@@ -1,0 +1,17 @@
+---
+# BUG FIXED: become: true added — systemd restart requires privilege escalation.
+
+- name: restart sshd
+  ansible.builtin.systemd:
+    name: sshd
+    state: restarted
+    daemon_reload: true
+  become: true
+  listen: "restart sshd"
+
+- name: reboot remote
+  ansible.builtin.reboot:
+    pre_reboot_delay: 30
+    post_reboot_delay: 30
+  become: true
+  listen: "reboot remote"

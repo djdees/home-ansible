@@ -1,0 +1,7 @@
+---
+deb_repository_url: "http://raspbian.raspberrypi.org/raspbian/"
+
+# NetworkManager connection name for the wired interface.
+# Default matches what Bookworm creates on fresh install.
+# Check with: nmcli connection show
+nm_connection_name: "Wired connection 1"

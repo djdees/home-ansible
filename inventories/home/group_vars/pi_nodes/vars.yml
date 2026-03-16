@@ -1,0 +1,10 @@
+---
+# inventories/home/group_vars/pi_nodes/vars.yml
+# Applies to all hosts in the pi_nodes group (lab, piholes, print_servers).
+#
+# fixer is the permanent Ansible/admin account — used for all playbook runs.
+# djdees is the personal user account — created by base_user role.
+# Keeping them separate follows least-privilege: automation uses fixer,
+# interactive sessions use djdees.
+ansible_user:  fixer
+ansible_group: fixer

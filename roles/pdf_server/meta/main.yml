@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  author: home-ansible
+  description: "Apache2 PDF/media file server"
+  min_ansible_version: "2.10"
+dependencies:
+  - role: base_packages

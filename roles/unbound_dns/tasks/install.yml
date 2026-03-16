@@ -1,0 +1,43 @@
+---
+- name: Install unbound
+  ansible.builtin.package:
+    name: unbound
+    state: present
+  become: true
+  tags: [unbound, install]
+
+- name: Ensure /etc/unbound/unbound.conf.d exists
+  ansible.builtin.file:
+    path: /etc/unbound/unbound.conf.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+  tags: [unbound, install]
+
+- name: Ensure /var/lib/unbound exists
+  ansible.builtin.file:
+    path: /var/lib/unbound
+    state: directory
+    owner: unbound
+    group: unbound
+    mode: '0755'
+  become: true
+  tags: [unbound, install]
+
+- name: Enable unbound service
+  ansible.builtin.systemd:
+    name: unbound
+    enabled: true
+    daemon_reload: true
+    masked: false
+  become: true
+  tags: [unbound, install]
+
+- name: Remove legacy home_lan.conf if present
+  ansible.builtin.file:
+    path: /etc/unbound/unbound.conf.d/home_lan.conf
+    state: absent
+  become: true
+  tags: [unbound, install]

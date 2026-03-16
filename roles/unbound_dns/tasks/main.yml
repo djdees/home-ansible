@@ -1,0 +1,12 @@
+---
+- name: Import install tasks
+  ansible.builtin.import_tasks: install.yml
+
+- name: Import configure tasks
+  ansible.builtin.import_tasks: configure.yml
+
+- name: Import root hints tasks
+  ansible.builtin.import_tasks: hints.yml
+
+- name: Import internal DNS zone tasks
+  ansible.builtin.import_tasks: internal_dns.yml
