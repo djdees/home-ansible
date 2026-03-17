@@ -8,6 +8,9 @@ nginx_sites:
   - name: "theCity.home.arpa"
     root: "{{ ssd_mount }}/theCity"
     autoindex: false
+  - name: "notebook.home.arpa"
+    root: "{{ ssd_mount }}/notebook"
+    autoindex: false
 
 nginx_content_editors:
   - fixer
@@ -19,4 +22,7 @@ apache_sites:
     autoindex: true
   - name: "theCity.home.arpa"
     root: "{{ ssd_mount }}/theCity"
+    autoindex: false
+  - name: "notebook.home.arpa"
+    root: "{{ ssd_mount }}/notebook"
     autoindex: false
