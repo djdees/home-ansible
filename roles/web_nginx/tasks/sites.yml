@@ -1,0 +1,43 @@
+---
+- name: Ensure document roots exist with correct ownership
+  ansible.builtin.file:
+    path: "{{ item.root }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0775'
+  become: true
+  loop: "{{ nginx_sites }}"
+  tags: [nginx, sites]
+
+- name: Add content editors to www-data group
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: www-data
+    append: true
+  become: true
+  loop: "{{ nginx_content_editors }}"
+  tags: [nginx, sites]
+
+- name: Deploy Nginx site configs
+  ansible.builtin.template:
+    src: site.conf.j2
+    dest: "/etc/nginx/sites-available/{{ item.name }}.conf"
+    owner: root
+    group: root
+    mode: '0644'
+    backup: true
+  become: true
+  loop: "{{ nginx_sites }}"
+  notify: restart nginx
+  tags: [nginx, sites]
+
+- name: Enable Nginx sites
+  ansible.builtin.file:
+    src: "/etc/nginx/sites-available/{{ item.name }}.conf"
+    dest: "/etc/nginx/sites-enabled/{{ item.name }}.conf"
+    state: link
+  become: true
+  loop: "{{ nginx_sites }}"
+  notify: restart nginx
+  tags: [nginx, sites]

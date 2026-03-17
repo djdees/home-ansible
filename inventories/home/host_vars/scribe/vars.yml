@@ -1,0 +1,22 @@
+---
+ssd_mount: "/www"
+
+nginx_sites:
+  - name: "scribe.home.arpa"
+    root: "{{ ssd_mount }}/scribe"
+    autoindex: true
+  - name: "theCity.home.arpa"
+    root: "{{ ssd_mount }}/theCity"
+    autoindex: false
+
+nginx_content_editors:
+  - fixer
+  - djdees
+
+apache_sites:
+  - name: "scribe.home.arpa"
+    root: "{{ ssd_mount }}/scribe"
+    autoindex: true
+  - name: "theCity.home.arpa"
+    root: "{{ ssd_mount }}/theCity"
+    autoindex: false
