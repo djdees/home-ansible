@@ -1,0 +1,6 @@
+---
+galaxy_info:
+  author: home-ansible
+  description: "Network configuration — auto-detects NetworkManager, netplan, dhcpcd, or systemd-networkd"
+  min_ansible_version: "2.10"
+dependencies: []

@@ -1,0 +1,5 @@
+---
+# static_ip must be set per host.
+# For Pi nodes it comes from pi_static_ip in hosts.yml.
+# For infra servers set it in host_vars/<hostname>/vars.yml.
+static_ip: "{{ pi_static_ip | default(ansible_host) }}"

@@ -6,6 +6,11 @@
 #            Default is now /usr/lib/openssh/sftp-server (Debian/Raspbian).
 #            Override ssh_sftp_server_path in group_vars for RHEL hosts.
 
+- name: Gather service facts to detect ssh vs sshd service name
+  ansible.builtin.service_facts:
+  become: true
+  tags: [ssh, setup]
+
 - name: Deploy SSH banner
   ansible.builtin.copy:
     src: issue.net

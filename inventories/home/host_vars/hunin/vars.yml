@@ -1,0 +1,5 @@
+---
+# inventories/home/host_vars/hunin/vars.yml
+# hunin — Ubuntu 24.04 LTS
+# Network managed by netplan + systemd-networkd
+static_ip: "192.168.1.85"

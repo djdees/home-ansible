@@ -1,22 +1,18 @@
 ---
-- name: Ensure document roots exist with correct ownership
+# Deploys each site defined in nginx_sites. Each site needs:
+#   name:       hostname (e.g. scribe.home.arpa)
+#   root:       document root path (from host_vars or group_vars)
+#   autoindex:  true/false — directory listing for media/PDF serving
+
+- name: Ensure document roots exist
   ansible.builtin.file:
     path: "{{ item.root }}"
     state: directory
     owner: www-data
     group: www-data
-    mode: '0775'
+    mode: '0755'
   become: true
   loop: "{{ nginx_sites }}"
-  tags: [nginx, sites]
-
-- name: Add content editors to www-data group
-  ansible.builtin.user:
-    name: "{{ item }}"
-    groups: www-data
-    append: true
-  become: true
-  loop: "{{ nginx_content_editors }}"
   tags: [nginx, sites]
 
 - name: Deploy Nginx site configs

@@ -38,24 +38,28 @@ server:
     #   ansible-playbook playbooks/unbound-setup.yml --tags internal-dns
     local-zone: "home.arpa." static
 
+    # ── Infrastructure ───────────────────────────────────────────────────────
     local-data: "pihole.home.arpa.   IN A 192.168.1.8"
     local-data: "garmr.home.arpa.    IN A 192.168.1.5"
+    local-data: "scribe.home.arpa.   IN A 192.168.1.83"
 
+    # ── Raspberry Pi lab nodes ───────────────────────────────────────────────
     local-data: "pi00.home.arpa.     IN A 192.168.1.90"
     local-data: "pi01.home.arpa.     IN A 192.168.1.91"
     local-data: "pi02.home.arpa.     IN A 192.168.1.92"
     local-data: "pi03.home.arpa.     IN A 192.168.1.93"
     local-data: "pi04.home.arpa.     IN A 192.168.1.94"
 
+    # ── scribe (192.168.1.83) — print server, web server ────────────────────
     local-data: "scribe.home.arpa.   IN A 192.168.1.83"
     local-data: "theCity.home.arpa.  IN A 192.168.1.83"
-    local-data: "notebook.home.arpa.  IN A 192.168.1.83"
 
 
-    local-data: "hunin.home.arpa.    IN A 192.168.1.85"
-    local-data: "pdf.home.arpa.      IN A 192.168.1.85"
-    local-data: "docker.home.arpa.   IN A 192.168.1.85"
+    # ── Server Nodes ────────────────────────────────────────────────
+    local-data: "hunin.home.arpa.    IN A 192.168.1.84"
+    local-data: "munin.home.arpa.    IN A 192.168.1.85"
 
+    # ── Reverse (PTR) records ────────────────────────────────────────────────
     local-data-ptr: "192.168.1.8   pihole.home.arpa."
     local-data-ptr: "192.168.1.5   garmr.home.arpa."
 
@@ -66,5 +70,5 @@ server:
     local-data-ptr: "192.168.1.94  pi04.home.arpa."
 
     local-data-ptr: "192.168.1.83  scribe.home.arpa."
-    local-data-ptr: "192.168.1.84  heimdal.home.arpa."
-    local-data-ptr: "192.168.1.85  hunin.home.arpa."
+    local-data-ptr: "192.168.1.84  hunin.home.arpa."
+    local-data-ptr: "192.168.1.85  munin.home.arpa."

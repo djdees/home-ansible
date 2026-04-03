@@ -1,0 +1,54 @@
+---
+# base_network/tasks/network_nm.yml
+# Sets a static IP via NetworkManager (nmcli).
+# Used on: Bookworm/Trixie Pis, Ubuntu desktop, Lubuntu.
+
+- name: Detect active wired connection name
+  ansible.builtin.shell:
+    cmd: "nmcli -t -f NAME,TYPE,DEVICE connection show --active | grep ethernet | head -1 | cut -d: -f1"
+  register: nm_detected_connection
+  changed_when: false
+  become: true
+  tags: [base_network, network, setup]
+
+- name: Fail if no active wired connection found
+  ansible.builtin.fail:
+    msg: "No active ethernet connection found via nmcli. Check: nmcli connection show"
+  when: nm_detected_connection.stdout == ""
+  tags: [base_network, network, setup]
+
+- name: Set static IP via NetworkManager ({{ nm_detected_connection.stdout }})
+  ansible.builtin.command:
+    cmd: >
+      nmcli connection modify "{{ nm_detected_connection.stdout }}"
+      ipv4.method manual
+      ipv4.addresses {{ static_ip }}/24
+      ipv4.gateway {{ home_gateway }}
+      ipv4.dns "{{ home_dns_primary }} {{ home_dns_fallback }}"
+  become: true
+  tags: [base_network, network, setup]
+
+- name: Bring connection up (async — SSH will drop as IP changes)
+  ansible.builtin.command:
+    cmd: nmcli connection up "{{ nm_detected_connection.stdout }}"
+  become: true
+  async: 10
+  poll: 0
+  ignore_errors: true
+  tags: [base_network, network, setup]
+
+- name: Wait for host to come back at new static IP
+  ansible.builtin.wait_for_connection:
+    delay: 5
+    timeout: 60
+  tags: [base_network, network, setup]
+
+- name: Configure WiFi via NetworkManager
+  ansible.builtin.command:
+    cmd: >
+      nmcli device wifi connect "{{ wifi_ssid }}"
+      password "{{ wifi_psk }}"
+  become: true
+  when: wifi_ssid is defined and wifi_psk is defined
+  ignore_errors: true
+  tags: [base_network, network, setup, wifi]

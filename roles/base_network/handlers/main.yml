@@ -1,0 +1,14 @@
+---
+- name: restart dhcpcd
+  ansible.builtin.systemd:
+    name: dhcpcd
+    state: restarted
+  become: true
+  listen: "restart dhcpcd"
+
+- name: restart systemd-networkd
+  ansible.builtin.systemd:
+    name: systemd-networkd
+    state: restarted
+  become: true
+  listen: "restart systemd-networkd"
