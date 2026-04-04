@@ -1,0 +1,29 @@
+---
+# playbooks/otel-setup.yml
+# Deploys the OpenTelemetry Collector (contrib) to all hosts in otel_nodes.
+# Each host ships its own metrics and journald logs to ClickHouse on hunin.
+#
+# Currently: muspell (workstation/control) and hunin.
+# Add hosts to the otel_nodes group in hosts.yml to expand.
+#
+# Prerequisites:
+#   - ClickHouse must be running (clickhouse-setup.yml)
+#   - vault_clickhouse_otel_password in vault
+#
+# Usage:
+#   ansible-playbook playbooks/otel-setup.yml --ask-vault-pass
+#   ansible-playbook playbooks/otel-setup.yml --limit hunin --ask-vault-pass
+#
+# To update config only (no reinstall):
+#   ansible-playbook playbooks/otel-setup.yml --tags configure --ask-vault-pass
+#
+# Tag reference:
+#   install    — repo, package, service enable
+#   configure  — env file, systemd drop-in, config.yaml
+#   otel       — all of the above
+
+- name: OpenTelemetry Collector setup
+  hosts: otel_nodes
+  become: true
+  roles:
+    - otel_collector

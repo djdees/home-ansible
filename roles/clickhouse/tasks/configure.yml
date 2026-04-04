@@ -1,0 +1,29 @@
+---
+# roles/clickhouse/tasks/configure.yml
+# Deploys the Ansible-managed config override into the bind-mounted config dir.
+# ClickHouse merges all XML files in /etc/clickhouse-server/config.d/ on start.
+
+- name: Deploy ClickHouse config override
+  ansible.builtin.template:
+    src: config.xml.j2
+    dest: "{{ clickhouse_config_dir }}/ansible.xml"
+    owner: "101"
+    group: "101"
+    mode: '0640'
+    backup: true
+  become: true
+  notify: restart clickhouse
+  tags: [clickhouse, configure]
+
+- name: Deploy ClickHouse users config (sets admin password)
+  ansible.builtin.template:
+    src: users.xml.j2
+    dest: "{{ clickhouse_config_dir }}/users.xml"
+    owner: "101"
+    group: "101"
+    mode: '0640'
+    backup: true
+  become: true
+  no_log: true
+  notify: restart clickhouse
+  tags: [clickhouse, configure]

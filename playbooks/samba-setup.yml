@@ -5,7 +5,7 @@
 # Usage:
 #   ansible-playbook playbooks/samba-setup.yml
 
-- hosts: print_servers
+- hosts: pi_servers
   become: true
   roles:
     - base_samba

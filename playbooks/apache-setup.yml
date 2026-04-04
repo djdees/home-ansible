@@ -16,7 +16,7 @@
 #   apache   — everything above
 
 - name: Apache2 web server setup
-  hosts: print_servers
+  hosts: pi_servers
   become: true
   roles:
     - web_apache

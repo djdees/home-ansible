@@ -26,9 +26,14 @@
   become: true
   tags: [docker, install]
 
-- name: Download Docker GPG key (Debian)
+- name: Set Docker repo distro (Ubuntu vs Debian)
+  ansible.builtin.set_fact:
+    docker_repo_distro: "{{ 'ubuntu' if ansible_distribution == 'Ubuntu' else 'debian' }}"
+  tags: [docker, install]
+
+- name: Download Docker GPG key
   ansible.builtin.get_url:
-    url: https://download.docker.com/linux/debian/gpg
+    url: "https://download.docker.com/linux/{{ docker_repo_distro }}/gpg"
     dest: /etc/apt/keyrings/docker.asc
     owner: root
     group: root
@@ -37,12 +42,12 @@
   become: true
   tags: [docker, install]
 
-- name: Add Docker apt repository (Debian)
+- name: Add Docker apt repository
   ansible.builtin.apt_repository:
     repo: >-
       deb [arch={{ docker_arch[ansible_machine] }}
       signed-by=/etc/apt/keyrings/docker.asc]
-      https://download.docker.com/linux/debian
+      https://download.docker.com/linux/{{ docker_repo_distro }}
       {{ ansible_distribution_release }} stable
     filename: docker
     state: present
@@ -62,9 +67,17 @@
   become: true
   tags: [docker, install]
 
-- name: Add ansible_user to docker group
+- name: Add ansible user to docker group
   ansible.builtin.user:
     name: "{{ ansible_user }}"
+    groups: docker
+    append: true
+  become: true
+  tags: [docker, install]
+
+- name: Add personal user to docker group
+  ansible.builtin.user:
+    name: "{{ personal_user }}"
     groups: docker
     append: true
   become: true

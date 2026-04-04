@@ -16,7 +16,7 @@
 #   nginx    — everything above
 
 - name: Nginx web server setup
-  hosts: print_servers
+  hosts: pi_servers
   become: true
   roles:
     - web_nginx

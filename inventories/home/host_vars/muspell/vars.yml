@@ -1,0 +1,9 @@
+---
+# inventories/home/host_vars/muspell/vars.yml
+# muspell — Ubuntu 24.04 LTS, control machine (192.168.1.198)
+# Connects via ansible_connection: local — no SSH needed.
+
+# otel_collector role settings
+otel_service_name: "muspell"
+# muspell is a workstation, not a Docker host
+otel_collect_docker_stats: false

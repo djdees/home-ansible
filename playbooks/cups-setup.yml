@@ -11,7 +11,7 @@
 #   cups       — all CUPS tasks
 #   avahi      — Avahi/AirPrint tasks only
 
-- hosts: print_servers
+- hosts: pi_servers
   become: true
   roles:
     - base_cups

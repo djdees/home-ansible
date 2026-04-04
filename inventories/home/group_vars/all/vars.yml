@@ -13,8 +13,15 @@ home_dns_fallback: "1.1.1.1"
 home_timezone: "America/Chicago"
 
 # ── Users ────────────────────────────────────────────────────────────────────
+# fixer is created at imaging time and is the permanent Ansible/admin account.
+# It is used for all playbook runs. djdees is the personal interactive account,
+# created by the base_user role after first bootstrap.
+# Setting ansible_user here (all hosts) ensures infra nodes connect as fixer
+# on fresh rebuilds — before djdees exists.
+ansible_user:  fixer
+ansible_group: fixer
+
 # Bootstrap user created during imaging. Used by Ansible for initial runs.
-# Removed from the system once djdees is confirmed working.
 bootstrap_user: "fixer"
 
 # Personal user — created by the base_user role with passwordless sudo.

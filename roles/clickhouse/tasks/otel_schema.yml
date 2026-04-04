@@ -1,0 +1,61 @@
+---
+# roles/clickhouse/tasks/otel_schema.yml
+# Bootstraps the OTEL database, tables, and ingest user.
+# SQL is templated to a tempfile then piped into the container via docker exec -i.
+# This avoids shell quoting problems entirely. All SQL is idempotent.
+
+- name: Wait for ClickHouse HTTP port to be ready
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: "{{ clickhouse_http_port }}"
+    delay: 3
+    timeout: 60
+  tags: [clickhouse, schema]
+
+- name: Template OTEL schema SQL to control machine tempfile
+  ansible.builtin.template:
+    src: otel_schema.sql.j2
+    dest: /tmp/clickhouse_otel_schema.sql
+    mode: '0600'
+  delegate_to: localhost
+  become: false
+  no_log: true
+  tags: [clickhouse, schema]
+
+- name: Copy schema SQL to remote host
+  ansible.builtin.copy:
+    src: /tmp/clickhouse_otel_schema.sql
+    dest: /tmp/clickhouse_otel_schema.sql
+    mode: '0600'
+  become: true
+  no_log: true
+  tags: [clickhouse, schema]
+
+- name: Execute OTEL schema inside ClickHouse container
+  ansible.builtin.shell:
+    cmd: >
+      docker exec -i {{ clickhouse_container_name }}
+      clickhouse-client
+      --user default
+      --password '{{ vault_clickhouse_admin_password }}'
+      --multiquery
+      < /tmp/clickhouse_otel_schema.sql
+  become: true
+  changed_when: false
+  no_log: true
+  tags: [clickhouse, schema]
+
+- name: Remove schema SQL tempfile from remote host
+  ansible.builtin.file:
+    path: /tmp/clickhouse_otel_schema.sql
+    state: absent
+  become: true
+  tags: [clickhouse, schema]
+
+- name: Remove schema SQL tempfile from control machine
+  ansible.builtin.file:
+    path: /tmp/clickhouse_otel_schema.sql
+    state: absent
+  delegate_to: localhost
+  become: false
+  tags: [clickhouse, schema]

@@ -1,14 +1,8 @@
 ---
 # playbooks/scribe-setup.yml
-# Full setup for scribe — base Pi config, CUPS (kept for future use),
-# and Nginx web server.
-#
-# CUPS and Avahi are installed but not required for the current printer
-# (network-enabled). The role is kept so scribe can serve as a print
-# server again without re-running a full setup.
-#
-# To use Apache instead of Nginx, replace web_nginx with web_apache.
-# Both are configured in host_vars/scribe/vars.yml.
+# Full setup for scribe — base Pi config, accounts, SSH hardening, and Nginx.
+# CUPS is not included — the current printer is network-attached and doesn't
+# need a print server. Add base_cups back here if that changes.
 #
 # Usage:
 #   # First run — Pi still on DHCP:
@@ -17,14 +11,16 @@
 #
 #   # Subsequent runs:
 #   ansible-playbook playbooks/scribe-setup.yml --ask-vault-pass
+#
+# To update Nginx site config only:
+#   ansible-playbook playbooks/scribe-setup.yml --tags sites --ask-vault-pass
 
 - name: Scribe server setup
-  hosts: print_servers
+  hosts: pi_servers
   become: true
   roles:
     - base_pi
     - base_user
     - user_dotfiles
     - base_ssh
-    - base_cups
     - web_nginx

@@ -1,8 +1,13 @@
 ---
 # playbooks/site.yml
-# Full bootstrap — applies the correct base configuration to every host.
-# Pi nodes get base_pi; Linux servers/desktops get base_linux.
-# Both get base_user (creates djdees), dotfiles, and SSH hardening.
+# Full bootstrap — applies base configuration to every host type.
+#
+#   pi_nodes      → base_pi + accounts + dotfiles + SSH
+#   pi_servers    → same as pi_nodes (scribe, etc.)
+#   infra_servers → base_linux + accounts + dotfiles + SSH
+#
+# muspell (control machine) is NOT included here — it's managed separately
+# since it runs the playbooks and bootstraps itself via localhost connection.
 #
 # Usage:
 #   ansible-playbook playbooks/site.yml --ask-vault-pass
@@ -11,6 +16,15 @@
 
 - name: Bootstrap Raspberry Pi nodes
   hosts: pi_nodes
+  become: true
+  roles:
+    - base_pi
+    - base_user
+    - user_dotfiles
+    - base_ssh
+
+- name: Bootstrap Raspberry Pi servers
+  hosts: pi_servers
   become: true
   roles:
     - base_pi
