@@ -25,3 +25,9 @@ apache_sites:
   - name: "thecity.home.arpa"
     root: "{{ ssd_mount }}/thecity"
     autoindex: true
+
+# OpenTelemetry Collector
+otel_service_name: "scribe"
+otel_collect_host_metrics: true
+otel_collect_journald_logs: true
+otel_collect_docker_stats: false
