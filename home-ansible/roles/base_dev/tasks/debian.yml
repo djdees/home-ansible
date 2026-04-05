@@ -1,6 +1,0 @@
----
-- name: Install Debian dev tools
-  ansible.builtin.import_tasks: tools_deb.yml
-
-- name: Install Go
-  ansible.builtin.import_tasks: golang.yml

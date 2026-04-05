@@ -1,8 +1,0 @@
----
-# Architecture map for Docker repo — Debian uses different arch strings
-# than ansible_machine returns.
-docker_arch:
-  x86_64:  "amd64"
-  aarch64: "arm64"
-  armv7l:  "armhf"
-  armv6l:  "armhf"

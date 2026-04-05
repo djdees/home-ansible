@@ -1,6 +1,0 @@
----
-galaxy_info:
-  author: home-ansible
-  description: "User dotfiles — bashrc, vimrc, bash_profile, shell selection"
-  min_ansible_version: "2.10"
-dependencies: []

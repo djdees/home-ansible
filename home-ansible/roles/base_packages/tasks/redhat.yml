@@ -1,7 +1,0 @@
----
-- name: Install base packages (RedHat)
-  ansible.builtin.dnf:
-    name: "{{ base_packages_list }}"
-    state: present
-  become: true
-  tags: [packages, install]

@@ -1,7 +1,0 @@
----
-galaxy_info:
-  author: home-ansible
-  description: "ClickHouse in Docker — data dir on attached storage, OTEL schema bootstrapped"
-  min_ansible_version: "2.10"
-dependencies:
-  - role: base_docker

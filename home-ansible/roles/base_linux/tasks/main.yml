@@ -1,8 +1,0 @@
----
-- name: Import Debian tasks
-  ansible.builtin.import_tasks: debian.yml
-  when: ansible_facts['os_family'] | lower == 'debian'
-
-- name: Import RedHat tasks
-  ansible.builtin.import_tasks: redhat.yml
-  when: ansible_facts['os_family'] | lower == 'redhat'

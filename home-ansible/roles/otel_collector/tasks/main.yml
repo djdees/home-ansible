@@ -1,6 +1,0 @@
----
-- name: Import OTEL Collector install tasks
-  ansible.builtin.import_tasks: install.yml
-
-- name: Import OTEL Collector configure tasks
-  ansible.builtin.import_tasks: configure.yml

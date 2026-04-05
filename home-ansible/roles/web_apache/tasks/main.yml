@@ -1,6 +1,0 @@
----
-- name: Import Apache install tasks
-  ansible.builtin.import_tasks: install.yml
-
-- name: Import Apache site configuration tasks
-  ansible.builtin.import_tasks: sites.yml

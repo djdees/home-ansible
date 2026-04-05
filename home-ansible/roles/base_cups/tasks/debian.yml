@@ -1,6 +1,0 @@
----
-- name: Configure CUPS
-  ansible.builtin.import_tasks: debian_cups.yml
-
-- name: Configure Avahi for AirPrint
-  ansible.builtin.import_tasks: debian_avahi.yml

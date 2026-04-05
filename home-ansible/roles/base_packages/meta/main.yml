@@ -1,6 +1,0 @@
----
-galaxy_info:
-  author: home-ansible
-  description: "Base package installation — deduplicates apt/dnf setup across all roles"
-  min_ansible_version: "2.10"
-dependencies: []

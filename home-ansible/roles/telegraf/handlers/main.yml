@@ -1,7 +1,0 @@
----
-- name: restart telegraf
-  ansible.builtin.systemd:
-    name: telegraf
-    state: restarted
-  become: true
-  listen: "restart telegraf"

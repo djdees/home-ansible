@@ -1,9 +1,0 @@
----
-# BUG FIXED: become: true added — was missing in original handler.
-
-- name: restart unbound
-  ansible.builtin.systemd:
-    name: unbound
-    state: restarted
-  become: true
-  listen: "restart unbound"

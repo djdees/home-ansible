@@ -1,6 +1,0 @@
----
-- name: Deploy dotfiles
-  ansible.builtin.import_tasks: dotfiles.yml
-
-- name: Set login shell
-  ansible.builtin.import_tasks: shell.yml

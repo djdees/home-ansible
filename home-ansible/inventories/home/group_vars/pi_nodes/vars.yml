@@ -1,7 +1,0 @@
----
-# inventories/home/group_vars/pi_nodes/vars.yml
-# ansible_user (fixer) is inherited from group_vars/all/vars.yml.
-# Kept here as an explicit reminder that Pi nodes use fixer — the account
-# created at imaging — not djdees (which base_user creates later).
-ansible_user:  fixer
-ansible_group: fixer

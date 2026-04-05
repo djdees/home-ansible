@@ -1,6 +1,0 @@
----
-galaxy_info:
-  author: home-ansible
-  description: "Creates personal user (djdees) with passwordless sudo and SSH key. fixer (Ansible/admin) account is managed separately and never removed."
-  min_ansible_version: "2.10"
-dependencies: []

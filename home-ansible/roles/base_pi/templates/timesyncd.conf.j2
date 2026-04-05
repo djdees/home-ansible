@@ -1,9 +1,0 @@
-# /usr/local/lib/systemd/timesyncd.conf.d/home.conf
-# Managed by Ansible (base_pi role)
-# BUG FIXED: original dest path was timesync.conf.d (missing trailing d)
-[Time]
-NTP={{ ntp_servers | join(' ') }}
-FallbackNTP={{ ntp_fallback_servers | join(' ') }}
-RootDistanceMaxSec=5
-PollIntervalMinSec=600
-PollIntervalMaxSec=2048

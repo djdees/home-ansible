@@ -1,9 +1,0 @@
----
-# Debian-specific SSH tasks — openssh-server should already be present
-# on Raspbian; this ensures it is installed and at current version.
-- name: Ensure openssh-server is present
-  ansible.builtin.apt:
-    name: openssh-server
-    state: present
-  become: true
-  tags: [ssh, install]

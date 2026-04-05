@@ -1,4 +1,0 @@
----
-# inventories/home/group_vars/infra_servers/vars.yml
-# ansible_user is set globally in group_vars/all/vars.yml (fixer).
-# No overrides needed here — infra servers are imaged with fixer at build time.

@@ -1,4 +1,0 @@
----
-# inventories/home/group_vars/piholes/vars.yml
-# Pi-hole specific vars. Password lives in vault.yml alongside this file.
-pihole_webpassword: "{{ vault_pihole_webpassword }}"

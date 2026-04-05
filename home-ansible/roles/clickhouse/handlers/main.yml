@@ -1,8 +1,0 @@
----
-- name: restart clickhouse
-  community.docker.docker_container:
-    name: "{{ clickhouse_container_name }}"
-    state: started
-    restart: true
-  become: true
-  listen: "restart clickhouse"

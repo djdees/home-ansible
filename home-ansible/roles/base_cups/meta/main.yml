@@ -1,7 +1,0 @@
----
-galaxy_info:
-  author: home-ansible
-  description: "CUPS print server with HP drivers and Avahi AirPrint support"
-  min_ansible_version: "2.10"
-dependencies:
-  - role: base_packages

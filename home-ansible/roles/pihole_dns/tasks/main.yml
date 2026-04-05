@@ -1,8 +1,0 @@
----
-# unbound_dns runs first — declared as a meta dependency in meta/main.yml.
-
-- name: Import Pi-hole install tasks
-  ansible.builtin.import_tasks: install.yml
-
-- name: Import Pi-hole configure tasks
-  ansible.builtin.import_tasks: configure.yml

@@ -1,5 +1,0 @@
----
-# Local path on the server where PDF/media files live (bind-mounted source).
-pdf_local_content:  "/media/pdf_gaming"
-# Remote document root served by Apache.
-pdf_remote_content: "/data/www"

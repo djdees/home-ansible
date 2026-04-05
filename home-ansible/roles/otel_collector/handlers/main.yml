@@ -1,8 +1,0 @@
----
-- name: restart otelcol
-  ansible.builtin.systemd:
-    name: otelcol-contrib
-    state: restarted
-    daemon_reload: true
-  become: true
-  listen: "restart otelcol"

@@ -1,5 +1,0 @@
----
-# inventories/home/host_vars/munin/vars.yml
-# munin — Ubuntu 24.04 LTS, Docker host
-# Network managed by netplan + systemd-networkd
-static_ip: "192.168.1.84"
