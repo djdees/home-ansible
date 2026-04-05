@@ -1,8 +1,8 @@
 <!-- /etc/clickhouse-server/config.d/ansible.xml                        -->
-<!-- Managed by Ansible (clickhouse role) — mounted into config.d/        -->
+<!-- Managed by Ansible (clickhouse role) - mounted into config.d/        -->
 <!-- ClickHouse merges all XML files in config.d/ at startup.             -->
 <clickhouse>
-    <!-- Logging — write to the bind-mounted logs volume -->
+    <!-- Logging - write to the bind-mounted logs volume -->
     <logger>
         <level>warning</level>
         <log>/var/log/clickhouse-server/clickhouse-server.log</log>
@@ -15,7 +15,7 @@
     <!-- container from other hosts. The host firewall is the perimeter.  -->
     <listen_host>0.0.0.0</listen_host>
 
-    <!-- Timezone — keep consistent with the host                         -->
+    <!-- Timezone - keep consistent with the host                         -->
     <timezone>{{ home_timezone }}</timezone>
 
     <!-- Mark this instance in system tables / logs                       -->

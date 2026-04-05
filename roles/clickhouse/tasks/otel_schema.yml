@@ -1,8 +1,11 @@
 ---
 # roles/clickhouse/tasks/otel_schema.yml
 # Bootstraps the OTEL database, tables, and ingest user.
-# SQL is templated to a tempfile then piped into the container via docker exec -i.
-# This avoids shell quoting problems entirely. All SQL is idempotent.
+# SQL is templated locally, copied to the remote host, then copied INTO the
+# container via "docker cp" before being executed with "docker exec".
+# This avoids the stdin-redirect + sudo pseudo-TTY conflict that breaks
+# "docker exec -i ... < file" when Ansible uses become: true.
+# All statements are idempotent (IF NOT EXISTS). Safe to re-run.
 
 - name: Wait for ClickHouse HTTP port to be ready
   ansible.builtin.wait_for:
@@ -19,37 +22,64 @@
     mode: '0600'
   delegate_to: localhost
   become: false
-  no_log: true
   tags: [clickhouse, schema]
 
 - name: Copy schema SQL to remote host
   ansible.builtin.copy:
     src: /tmp/clickhouse_otel_schema.sql
-    dest: /tmp/clickhouse_otel_schema.sql
+    dest: "/home/{{ ansible_user }}/clickhouse_otel_schema.sql"
     mode: '0600'
-  become: true
-  no_log: true
+  become: false
+  tags: [clickhouse, schema]
+
+- name: Copy schema SQL into ClickHouse container
+  ansible.builtin.command:
+    argv:
+      - docker
+      - cp
+      - "/home/{{ ansible_user }}/clickhouse_otel_schema.sql"
+      - "{{ clickhouse_container_name }}:/tmp/clickhouse_otel_schema.sql"
+  become: false
+  changed_when: false
   tags: [clickhouse, schema]
 
 - name: Execute OTEL schema inside ClickHouse container
-  ansible.builtin.shell:
-    cmd: >
-      docker exec -i {{ clickhouse_container_name }}
-      clickhouse-client
-      --user default
-      --password '{{ vault_clickhouse_admin_password }}'
-      --multiquery
-      < /tmp/clickhouse_otel_schema.sql
-  become: true
+  ansible.builtin.command:
+    argv:
+      - docker
+      - exec
+      - "{{ clickhouse_container_name }}"
+      - clickhouse-client
+      - --user
+      - default
+      - --password
+      - "{{ vault_clickhouse_admin_password }}"
+      - --multiquery
+      - --queries-file
+      - /tmp/clickhouse_otel_schema.sql
+  become: false
   changed_when: false
   no_log: true
   tags: [clickhouse, schema]
 
+- name: Remove schema SQL tempfile from inside container
+  ansible.builtin.command:
+    argv:
+      - docker
+      - exec
+      - "{{ clickhouse_container_name }}"
+      - rm
+      - -f
+      - /tmp/clickhouse_otel_schema.sql
+  become: false
+  changed_when: false
+  tags: [clickhouse, schema]
+
 - name: Remove schema SQL tempfile from remote host
   ansible.builtin.file:
-    path: /tmp/clickhouse_otel_schema.sql
+    path: "/home/{{ ansible_user }}/clickhouse_otel_schema.sql"
     state: absent
-  become: true
+  become: false
   tags: [clickhouse, schema]
 
 - name: Remove schema SQL tempfile from control machine

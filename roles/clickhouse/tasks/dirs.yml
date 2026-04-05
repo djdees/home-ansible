@@ -7,9 +7,9 @@
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    owner: "101"    # clickhouse uid inside the official Docker image
-    group: "101"
-    mode: '0750'
+    owner: root
+    group: root
+    mode: '0755'
   become: true
   loop:
     - "{{ clickhouse_data_dir }}"

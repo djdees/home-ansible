@@ -7,9 +7,9 @@
   ansible.builtin.template:
     src: config.xml.j2
     dest: "{{ clickhouse_config_dir }}/ansible.xml"
-    owner: "101"
-    group: "101"
-    mode: '0640'
+    owner: root
+    group: root
+    mode: '0644'
     backup: true
   become: true
   notify: restart clickhouse
@@ -19,9 +19,9 @@
   ansible.builtin.template:
     src: users.xml.j2
     dest: "{{ clickhouse_config_dir }}/users.xml"
-    owner: "101"
-    group: "101"
-    mode: '0640'
+    owner: root
+    group: root
+    mode: '0644'
     backup: true
   become: true
   no_log: true

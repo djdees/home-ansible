@@ -1,21 +1,16 @@
-<!-- /etc/clickhouse-server/config.d/users.xml                           -->
-<!-- Managed by Ansible (clickhouse role)                                 -->
-<!-- Sets a password on the default admin account.                        -->
-<!-- The otel_ingest user is created at schema bootstrap time via SQL.    -->
+<!-- /etc/clickhouse-server/config.d/users.xml -->
+<!-- Managed by Ansible (clickhouse role)      -->
+<!-- Password for default is set via CLICKHOUSE_PASSWORD env var at      -->
+<!-- container startup - do not manage it here.                         -->
 <clickhouse>
     <users>
         <default>
-            <!-- Require a password for the default (admin) account.      -->
-            <!-- SHA256 of vault_clickhouse_admin_password.               -->
-            <password_sha256_hex>{{ vault_clickhouse_admin_password | hash('sha256') }}</password_sha256_hex>
-
-            <!-- Restrict the default user to localhost inside the        -->
-            <!-- container — external clients must use otel_ingest.       -->
+            <!-- Restrict default user to localhost inside the container. -->
+            <!-- External clients use otel_ingest instead.               -->
             <networks>
                 <ip>127.0.0.1</ip>
                 <ip>::1</ip>
             </networks>
-
             <profile>default</profile>
             <quota>default</quota>
             <access_management>1</access_management>

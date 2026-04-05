@@ -2,6 +2,8 @@
 # roles/clickhouse/tasks/container.yml
 # Runs the ClickHouse container with host storage bind-mounted.
 # Uses restart: unless-stopped so it survives reboots without a compose file.
+# The default user password is set via CLICKHOUSE_PASSWORD env var at container
+# startup -- this avoids storing plaintext or managing SHA256 in users.xml.
 
 - name: Pull ClickHouse image
   community.docker.docker_image:
@@ -18,6 +20,9 @@
     restart_policy: unless-stopped
     ulimits:
       - "nofile:{{ clickhouse_nofile_soft }}:{{ clickhouse_nofile_hard }}"
+    env:
+      CLICKHOUSE_PASSWORD: "{{ vault_clickhouse_admin_password }}"
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
     ports:
       - "{{ clickhouse_http_port }}:8123"
       - "{{ clickhouse_tcp_port }}:9000"
@@ -25,9 +30,10 @@
       - "{{ clickhouse_data_dir }}:/var/lib/clickhouse"
       - "{{ clickhouse_logs_dir }}:/var/log/clickhouse-server"
       - "{{ clickhouse_config_dir }}:/etc/clickhouse-server/config.d"
-    cap_add:
+    capabilities:
       - SYS_NICE
       - NET_ADMIN
       - IPC_LOCK
   become: true
+  no_log: true
   tags: [clickhouse, container]
