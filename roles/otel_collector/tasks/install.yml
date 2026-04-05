@@ -1,53 +1,36 @@
 ---
 # roles/otel_collector/tasks/install.yml
-# Installs otelcol-contrib from the official OpenTelemetry apt repository.
+# Installs otelcol-contrib from GitHub releases as a .deb package.
 # The contrib distribution includes the ClickHouse exporter.
+# Pin the version in defaults/main.yml - check for new releases at:
+# https://github.com/open-telemetry/opentelemetry-collector-releases/releases
 
-- name: Ensure apt-transport-https is present
-  ansible.builtin.apt:
-    name: apt-transport-https
-    state: present
-  become: true
+- name: Determine system architecture for package download
+  ansible.builtin.set_fact:
+    otel_deb_arch: "{{ 'arm64' if ansible_architecture == 'aarch64' else 'amd64' }}"
   tags: [otel, install]
 
-- name: Create keyring directory
-  ansible.builtin.file:
-    path: /etc/apt/keyrings
-    state: directory
-    owner: root
-    group: root
-    mode: '0755'
-  become: true
-  tags: [otel, install]
-
-- name: Download OpenTelemetry GPG key
+- name: Download otelcol-contrib .deb from GitHub releases
   ansible.builtin.get_url:
-    url: https://packages.opentelemetry.io/debian/gpg.key
-    dest: /etc/apt/keyrings/opentelemetry.asc
-    owner: root
-    group: root
+    url: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otel_version }}/otelcol-contrib_{{ otel_version }}_linux_{{ otel_deb_arch }}.deb"
+    dest: "/tmp/otelcol-contrib_{{ otel_version }}_linux_{{ otel_deb_arch }}.deb"
     mode: '0644'
-    force: true
   become: true
   tags: [otel, install]
 
-- name: Add OpenTelemetry apt repository
-  ansible.builtin.apt_repository:
-    repo: >-
-      deb [signed-by=/etc/apt/keyrings/opentelemetry.asc]
-      https://packages.opentelemetry.io/debian/{{ ansible_distribution_release }} stable main
-    filename: opentelemetry
-    state: present
-    update_cache: true
-  become: true
-  tags: [otel, install]
-
-- name: Install otelcol-contrib
+- name: Install otelcol-contrib .deb package
   ansible.builtin.apt:
-    name: otelcol-contrib
-    state: latest
+    deb: "/tmp/otelcol-contrib_{{ otel_version }}_linux_{{ otel_deb_arch }}.deb"
+    state: present
   become: true
   notify: restart otelcol
+  tags: [otel, install]
+
+- name: Remove downloaded .deb package
+  ansible.builtin.file:
+    path: "/tmp/otelcol-contrib_{{ otel_version }}_linux_{{ otel_deb_arch }}.deb"
+    state: absent
+  become: true
   tags: [otel, install]
 
 - name: Enable otelcol-contrib service

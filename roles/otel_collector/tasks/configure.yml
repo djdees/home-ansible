@@ -1,7 +1,7 @@
 ---
 # roles/otel_collector/tasks/configure.yml
 
-# The password is kept out of the config file entirely — injected at runtime
+# The password is kept out of the config file entirely - injected at runtime
 # via an EnvironmentFile loaded by the systemd unit. The config references
 # ${CLICKHOUSE_PASSWORD} which systemd expands before starting the process.
 

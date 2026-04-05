@@ -1,7 +1,11 @@
 ---
 # roles/otel_collector/defaults/main.yml
 
-# ClickHouse target — the host running the ClickHouse container.
+# Pin the otelcol-contrib version. Check for new releases at:
+# https://github.com/open-telemetry/opentelemetry-collector-releases/releases
+otel_version: "0.149.0"
+
+# ClickHouse target - the host running the ClickHouse container.
 # Defaults to hunin's inventory address; override in host_vars if needed.
 otel_clickhouse_host: "{{ hostvars['hunin']['ansible_host'] }}"
 otel_clickhouse_tcp_port: 9000
@@ -9,7 +13,7 @@ otel_clickhouse_database: "otel"
 otel_clickhouse_user:     "otel_ingest"
 # Password from vault: vault_clickhouse_otel_password
 
-# What to collect on this host — all on by default, disable per host in host_vars.
+# What to collect on this host - all on by default, disable per host in host_vars.
 otel_collect_host_metrics: true
 otel_collect_journald_logs: true
 # Enable on hosts running Docker (e.g. munin, hunin once added):
@@ -19,6 +23,6 @@ otel_collect_docker_stats:  false
 otel_metrics_interval: "30s"
 
 # service.name tag written into all telemetry from this host.
-# Defaults to inventory_hostname — override in host_vars for muspell
+# Defaults to inventory_hostname - override in host_vars for muspell
 # since it connects as localhost but should be identifiable by name.
 otel_service_name: "{{ inventory_hostname }}"
