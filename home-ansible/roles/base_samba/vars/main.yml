@@ -1,0 +1,7 @@
+---
+# BUG FIXED: hardcoded 'mimir' and 'Yggdrasil' moved to variables.
+# Override in group_vars/pi_servers/vars.yml or host_vars as needed.
+samba_netbios_name: "{{ inventory_hostname }}"
+samba_workgroup:    "Yggdrasil"
+samba_server_string: "Samba %v on (%L)"
+samba_interfaces:   "eth0"

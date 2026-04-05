@@ -1,0 +1,7 @@
+---
+- name: Import pre-install cleanup tasks
+  ansible.builtin.import_tasks: preinstall.yml
+
+- name: Import Debian Docker setup
+  ansible.builtin.import_tasks: apt_setup.yml
+  when: ansible_facts['os_family'] | lower == 'debian'

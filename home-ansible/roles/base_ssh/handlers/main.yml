@@ -1,0 +1,19 @@
+---
+# BUG FIXED: become: true added — systemd restart requires privilege escalation.
+# BUG FIXED: SSH service is 'sshd' on Debian/Raspbian, 'ssh' on Ubuntu.
+#            Using service_facts to detect the correct name at runtime.
+
+- name: restart sshd
+  ansible.builtin.systemd:
+    name: "{{ 'ssh' if ansible_facts.services is defined and 'ssh.service' in ansible_facts.services else 'sshd' }}"
+    state: restarted
+    daemon_reload: true
+  become: true
+  listen: "restart sshd"
+
+- name: reboot remote
+  ansible.builtin.reboot:
+    pre_reboot_delay: 30
+    post_reboot_delay: 30
+  become: true
+  listen: "reboot remote"

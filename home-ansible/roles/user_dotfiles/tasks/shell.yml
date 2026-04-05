@@ -1,0 +1,19 @@
+---
+# Shell migration path: set user_shell to 'zsh' in group_vars when ready.
+# Phase 2 prep: install zsh alongside bash without switching yet.
+# Phase 3 switch: set user_shell: zsh in group_vars/all/vars.yml.
+
+- name: Install zsh if user_shell is zsh
+  ansible.builtin.package:
+    name: zsh
+    state: present
+  become: true
+  when: user_shell == 'zsh'
+  tags: [dotfiles, shell]
+
+- name: Set login shell for {{ ansible_user }}
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    shell: "{{ '/usr/bin/zsh' if user_shell == 'zsh' else '/bin/bash' }}"
+  become: true
+  tags: [dotfiles, shell]

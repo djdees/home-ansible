@@ -1,0 +1,9 @@
+---
+# BUG FIXED: become: true added to handler.
+
+- name: restart samba
+  ansible.builtin.systemd:
+    name: smbd
+    state: restarted
+  become: true
+  listen: "restart samba"

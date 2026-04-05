@@ -1,0 +1,37 @@
+---
+- name: Install Apache2
+  ansible.builtin.apt:
+    name: apache2
+    state: present
+    update_cache: true
+  become: true
+  tags: [apache, install]
+
+- name: Enable required Apache modules
+  ansible.builtin.command:
+    cmd: "a2enmod {{ item }}"
+  become: true
+  loop:
+    - autoindex
+    - rewrite
+    - headers
+  notify: restart apache2
+  changed_when: false
+  tags: [apache, install]
+
+- name: Disable default Apache site
+  ansible.builtin.command:
+    cmd: a2dissite 000-default.conf
+  become: true
+  notify: restart apache2
+  changed_when: false
+  tags: [apache, install]
+
+- name: Enable and start Apache2
+  ansible.builtin.systemd:
+    name: apache2
+    enabled: true
+    state: started
+    daemon_reload: true
+  become: true
+  tags: [apache, install]

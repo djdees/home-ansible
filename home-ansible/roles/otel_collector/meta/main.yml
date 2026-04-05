@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  author: home-ansible
+  description: "OpenTelemetry Collector (contrib) — host metrics and logs to ClickHouse"
+  min_ansible_version: "2.10"
+dependencies:
+  - role: base_packages

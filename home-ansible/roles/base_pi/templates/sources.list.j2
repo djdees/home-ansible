@@ -1,0 +1,7 @@
+# /etc/apt/sources.list — managed by Ansible (base_pi role)
+# Uses ansible_distribution_release detected at runtime so this template
+# works correctly on Bookworm, Trixie, and future releases without changes.
+deb http://deb.debian.org/debian {{ ansible_distribution_release }} main contrib non-free non-free-firmware
+deb http://deb.debian.org/debian {{ ansible_distribution_release }}-updates main contrib non-free non-free-firmware
+deb http://security.debian.org/debian-security {{ ansible_distribution_release }}-security main contrib non-free non-free-firmware
+deb http://archive.raspberrypi.com/debian/ {{ ansible_distribution_release }} main

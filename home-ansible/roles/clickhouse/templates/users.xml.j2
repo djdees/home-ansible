@@ -1,0 +1,19 @@
+<!-- /etc/clickhouse-server/config.d/users.xml -->
+<!-- Managed by Ansible (clickhouse role)      -->
+<!-- Password for default is set via CLICKHOUSE_PASSWORD env var at   -->
+<!-- container startup. Do not manage it here.                        -->
+<clickhouse>
+    <users>
+        <default>
+            <!-- Restrict default user to localhost inside the container. -->
+            <!-- External clients use otel_ingest instead.               -->
+            <networks>
+                <ip>127.0.0.1</ip>
+                <ip>::1</ip>
+            </networks>
+            <profile>default</profile>
+            <quota>default</quota>
+            <access_management>1</access_management>
+        </default>
+    </users>
+</clickhouse>

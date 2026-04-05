@@ -1,0 +1,25 @@
+---
+- name: Install Nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: true
+  become: true
+  tags: [nginx, install]
+
+- name: Remove default Nginx site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  become: true
+  notify: restart nginx
+  tags: [nginx, install]
+
+- name: Enable and start Nginx
+  ansible.builtin.systemd:
+    name: nginx
+    enabled: true
+    state: started
+    daemon_reload: true
+  become: true
+  tags: [nginx, install]

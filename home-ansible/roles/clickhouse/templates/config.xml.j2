@@ -1,0 +1,23 @@
+<!-- /etc/clickhouse-server/config.d/ansible.xml                        -->
+<!-- Managed by Ansible (clickhouse role) - mounted into config.d/        -->
+<!-- ClickHouse merges all XML files in config.d/ at startup.             -->
+<clickhouse>
+    <!-- Logging - write to the bind-mounted logs volume -->
+    <logger>
+        <level>warning</level>
+        <log>/var/log/clickhouse-server/clickhouse-server.log</log>
+        <errorlog>/var/log/clickhouse-server/clickhouse-server.err.log</errorlog>
+        <size>200M</size>
+        <count>5</count>
+    </logger>
+
+    <!-- Listen on all interfaces so the OTEL collector can reach the     -->
+    <!-- container from other hosts. The host firewall is the perimeter.  -->
+    <listen_host>0.0.0.0</listen_host>
+
+    <!-- Timezone - keep consistent with the host                         -->
+    <timezone>{{ home_timezone }}</timezone>
+
+    <!-- Mark this instance in system tables / logs                       -->
+    <display_name>{{ clickhouse_container_name }}.{{ home_domain }}</display_name>
+</clickhouse>

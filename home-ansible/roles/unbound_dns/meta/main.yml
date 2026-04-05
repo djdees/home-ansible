@@ -1,0 +1,9 @@
+---
+galaxy_info:
+  author: home-ansible
+  description: "Unbound recursive DNS resolver — standalone role for Pi-hole backend"
+  min_ansible_version: "2.10"
+  platforms:
+    - name: Debian
+      versions: [bookworm, bullseye]
+dependencies: []

@@ -1,0 +1,10 @@
+---
+# Network configuration is handled by the base_network role dependency
+# declared in meta/main.yml — it runs before these tasks automatically.
+
+- name: Import common tasks
+  ansible.builtin.import_tasks: common.yml
+
+- name: Import Debian-specific tasks
+  ansible.builtin.import_tasks: debian.yml
+  when: ansible_facts['os_family'] | lower == 'debian'

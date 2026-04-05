@@ -1,0 +1,12 @@
+---
+# BUG FIXED: version was 1.21.3 and architecture was hardcoded amd64.
+# Update telegraf_version when a new release ships.
+telegraf_version: "1.30.3"
+telegraf_source:  "https://dl.influxdata.com/telegraf/releases"
+
+# Architecture map — keyed on ansible_machine
+telegraf_arch:
+  x86_64:  "amd64"
+  aarch64: "arm64"
+  armv7l:  "armhf"
+  armv6l:  "armel"

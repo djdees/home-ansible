@@ -1,0 +1,7 @@
+---
+- name: Ensure openssh-server is present (RedHat)
+  ansible.builtin.dnf:
+    name: openssh-server
+    state: present
+  become: true
+  tags: [ssh, install]

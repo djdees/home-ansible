@@ -1,0 +1,8 @@
+---
+galaxy_info:
+  author: home-ansible
+  description: "Raspberry Pi base configuration — locale, timezone, network, NTP"
+  min_ansible_version: "2.10"
+dependencies:
+  - role: base_packages
+  - role: base_network

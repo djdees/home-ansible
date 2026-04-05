@@ -1,0 +1,17 @@
+---
+# Default site list — override in host_vars/scribe/vars.yml with actual paths.
+# Each entry needs: name, root, and optionally autoindex (default false).
+#
+# Example host_vars/scribe/vars.yml:
+#
+# nginx_sites:
+#   - name: scribe.home.arpa
+#     root: /data/www/scribe
+#     autoindex: false
+#   - name: thecity.home.arpa
+#     root: /mnt/external/thecity
+#     autoindex: true
+#
+# The external SSD path is set per-host in host_vars so it can differ
+# between web servers without touching the role.
+nginx_sites: []

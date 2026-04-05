@@ -1,0 +1,48 @@
+---
+# BUG FIXED: state: latest → state: present. 'latest' re-upgraded on every
+#            play even when nothing changed, breaking idempotency.
+# BUG FIXED: 'Restart SAMBA' task used `command: echo` to trigger a notify.
+#            echo always returns changed; the handler fired every single run.
+#            Removed entirely — the template task notifies the handler directly.
+
+- name: Install Samba
+  ansible.builtin.apt:
+    name: samba
+    state: present
+    update_cache: true
+  become: true
+  tags: [samba, install]
+
+- name: Deploy smb.conf
+  ansible.builtin.template:
+    src: smb.conf.j2
+    dest: /etc/samba/smb.conf
+    owner: root
+    group: root
+    mode: '0644'
+    backup: true
+  become: true
+  notify: restart samba
+  tags: [samba, configure]
+
+- name: Create Samba spool directory
+  ansible.builtin.file:
+    path: /var/spool/samba
+    state: directory
+    owner: root
+    group: root
+    mode: '1777'
+  become: true
+  tags: [samba, configure]
+
+- name: Enable and start Samba services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+    daemon_reload: true
+  become: true
+  loop:
+    - smbd
+    - nmbd
+  tags: [samba, configure]

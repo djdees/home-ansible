@@ -1,0 +1,6 @@
+---
+# inventories/home/group_vars/pi_servers/vars.yml
+# ansible_user (fixer) is inherited from group_vars/all/vars.yml.
+# Explicit here as a reminder — pi_servers are Raspberry Pis imaged with fixer.
+ansible_user:  fixer
+ansible_group: fixer

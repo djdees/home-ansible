@@ -1,0 +1,29 @@
+---
+# playbooks/base-dev.yml
+# Developer tooling: Go, tmux, jq, yamllint, shellcheck.
+# Each play applies the correct base role for the host type before dev tools.
+#
+# Usage:
+#   ansible-playbook playbooks/base-dev.yml --ask-vault-pass
+#   ansible-playbook playbooks/base-dev.yml --limit lab --ask-vault-pass
+#   ansible-playbook playbooks/base-dev.yml --limit infra_servers --ask-vault-pass
+
+- name: Dev setup for Raspberry Pi nodes
+  hosts: pi_nodes
+  become: true
+  roles:
+    - base_pi
+    - base_user
+    - user_dotfiles
+    - base_ssh
+    - base_dev
+
+- name: Dev setup for Linux servers and desktops
+  hosts: infra_servers
+  become: true
+  roles:
+    - base_linux
+    - base_user
+    - user_dotfiles
+    - base_ssh
+    - base_dev

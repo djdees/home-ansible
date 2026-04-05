@@ -1,0 +1,8 @@
+---
+- name: Import RedHat CUPS tasks
+  ansible.builtin.import_tasks: redhat.yml
+  when: ansible_facts['os_family'] | lower == 'redhat'
+
+- name: Import Debian CUPS tasks
+  ansible.builtin.import_tasks: debian.yml
+  when: ansible_facts['os_family'] | lower == 'debian'

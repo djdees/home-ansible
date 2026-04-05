@@ -1,0 +1,13 @@
+---
+# playbooks/base-ssh.yml
+# Re-deploy sshd_config and banner only. Useful when rotating AllowUsers
+# or tightening PasswordAuthentication without a full re-run.
+#
+# Usage:
+#   ansible-playbook playbooks/base-ssh.yml
+#   ansible-playbook playbooks/base-ssh.yml --limit lab
+
+- hosts: all
+  become: true
+  roles:
+    - base_ssh

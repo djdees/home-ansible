@@ -1,0 +1,45 @@
+---
+# base_pi/handlers/main.yml
+# BUG FIXED: restart cron was using /etc/init.d/cron restart (SysV).
+# BUG FIXED: become: true added to all handlers.
+
+- name: restart systemd-timesyncd
+  ansible.builtin.systemd:
+    name: systemd-timesyncd
+    state: restarted
+  become: true
+  listen: "restart systemd-timesyncd"
+
+- name: restart cron
+  ansible.builtin.systemd:
+    name: cron
+    state: restarted
+  become: true
+  listen: "restart cron"
+
+- name: reload NetworkManager connection
+  ansible.builtin.command:
+    cmd: nmcli connection reload
+  become: true
+  listen: "reload NetworkManager connection"
+
+- name: restart dhcpcd
+  ansible.builtin.systemd:
+    name: dhcpcd
+    state: restarted
+  become: true
+  listen: "restart dhcpcd"
+
+- name: restart systemd-networkd
+  ansible.builtin.systemd:
+    name: systemd-networkd
+    state: restarted
+  become: true
+  listen: "restart systemd-networkd"
+
+- name: reboot remote
+  ansible.builtin.reboot:
+    pre_reboot_delay: 30
+    post_reboot_delay: 30
+  become: true
+  listen: "reboot remote"

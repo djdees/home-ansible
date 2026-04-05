@@ -1,0 +1,40 @@
+---
+# pihole_dns/tasks/configure.yml
+# Pi-hole v6 configuration via pihole-FTL --config.
+# Pi-hole v6 replaced setupVars.conf and dnsmasq drop-ins with pihole.toml.
+# All configuration is applied through the pihole-FTL binary directly.
+#
+# These settings survive Pi-hole updates because they write to pihole.toml
+# which Pi-hole manages as its authoritative config file.
+
+- name: Set upstream DNS to unbound
+  ansible.builtin.command:
+    cmd: pihole-FTL --config dns.upstreams '["{{ pihole_upstream_dns }}"]'
+  become: true
+  notify: restart pihole-FTL
+  tags: [pihole, configure]
+
+- name: Set local domain name
+  ansible.builtin.command:
+    cmd: pihole-FTL --config dns.domain.name "{{ pihole_local_domain }}"
+  become: true
+  notify: restart pihole-FTL
+  tags: [pihole, configure]
+
+- name: Configure conditional forwarding for local domain
+  ansible.builtin.command:
+    cmd: >
+      pihole-FTL --config dns.revServers
+      '["true,{{ home_network_cidr }},{{ pihole_upstream_dns }},{{ pihole_local_domain }}"]'
+  become: true
+  notify: restart pihole-FTL
+  tags: [pihole, configure]
+
+- name: Ensure pihole-FTL is enabled and started
+  ansible.builtin.systemd:
+    name: pihole-FTL
+    enabled: true
+    state: started
+    daemon_reload: true
+  become: true
+  tags: [pihole, configure]

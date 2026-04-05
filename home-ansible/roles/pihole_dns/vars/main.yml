@@ -1,0 +1,12 @@
+---
+# Pi-hole v6 configuration variables.
+# upstream DNS must match unbound_port in the unbound_dns role.
+pihole_upstream_dns:  "127.0.0.1#5335"
+pihole_local_domain:  "{{ home_domain }}"
+
+# CIDR of your local network — used for conditional forwarding (revServers)
+# so Pi-hole forwards .home.arpa queries to unbound instead of answering NXDOMAIN.
+home_network_cidr:    "192.168.1.0/24"
+
+# Web interface password sourced from group_vars/piholes/vault.yml
+# pihole_webpassword: "{{ vault_pihole_webpassword }}"

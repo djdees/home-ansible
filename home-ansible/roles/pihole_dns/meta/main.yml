@@ -1,0 +1,10 @@
+---
+galaxy_info:
+  author: home-ansible
+  description: "Pi-hole DNS sinkhole — unbound_dns runs first via meta dependency"
+  min_ansible_version: "2.10"
+  platforms:
+    - name: Debian
+      versions: [bookworm, bullseye]
+dependencies:
+  - role: unbound_dns

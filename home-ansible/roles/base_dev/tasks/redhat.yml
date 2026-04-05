@@ -1,0 +1,15 @@
+---
+- name: Install RedHat dev tools
+  ansible.builtin.dnf:
+    name:
+      - tmux
+      - jq
+      - gcc
+      - make
+      - shellcheck
+    state: present
+  become: true
+  tags: [dev, install]
+
+- name: Install Go
+  ansible.builtin.import_tasks: golang.yml

@@ -1,0 +1,11 @@
+# /etc/wpa_supplicant/wpa_supplicant.conf — managed by Ansible (base_pi role)
+# Used on Bullseye and older Raspbian (dhcpcd active).
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+country=US
+
+network={
+    ssid="{{ wifi_ssid }}"
+    psk="{{ wifi_psk }}"
+    key_mgmt=WPA-PSK
+}

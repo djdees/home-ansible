@@ -1,0 +1,32 @@
+---
+# BUG FIXED: mode was 0744 (executable bit on shell config) → 0644.
+# CONSOLIDATED: base_home/files/bashrc and base_pi/templates/bashrc were
+# two slightly different copies of the same file. Now one template with
+# a variable controlling the PS1 style.
+
+- name: Deploy .bashrc
+  ansible.builtin.template:
+    src: bashrc.j2
+    dest: "/home/{{ ansible_user }}/.bashrc"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_group }}"
+    mode: '0644'
+  tags: [dotfiles]
+
+- name: Deploy .bash_profile
+  ansible.builtin.copy:
+    src: bash_profile
+    dest: "/home/{{ ansible_user }}/.bash_profile"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_group }}"
+    mode: '0644'
+  tags: [dotfiles]
+
+- name: Deploy .vimrc
+  ansible.builtin.copy:
+    src: vimrc
+    dest: "/home/{{ ansible_user }}/.vimrc"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_group }}"
+    mode: '0644'
+  tags: [dotfiles]

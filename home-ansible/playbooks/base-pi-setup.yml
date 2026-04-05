@@ -1,0 +1,33 @@
+---
+# playbooks/base-pi-setup.yml
+# Base Raspberry Pi configuration. Run this first on a freshly imaged Pi
+# after enabling SSH and adding the fixer sudoers entry manually.
+#
+# Role order:
+#   base_packages  — apt update, git, python3 (via base_pi meta dep)
+#   base_pi        — locale, timezone, static IP, NTP, WiFi
+#   base_user      — create djdees, passwordless sudo, deploy SSH key
+#   user_dotfiles  — bashrc, vimrc, bash_profile (runs as fixer)
+#   base_ssh       — harden sshd_config (AllowUsers: fixer djdees)
+#
+# fixer remains as the permanent Ansible/admin account.
+# djdees is the personal interactive account.
+# Both are kept — fixer for automation, djdees for interactive sessions.
+#
+# Usage:
+#   # First run — Pi still on DHCP:
+#   ansible-playbook playbooks/base-pi-setup.yml --limit piholes \
+#     -e ansible_host=192.168.1.XXX --ask-vault-pass
+#
+#   # All subsequent runs — Pi on static IP:
+#   ansible-playbook playbooks/base-pi-setup.yml --limit piholes \
+#     --ask-vault-pass
+
+- name: Base Raspberry Pi setup
+  hosts: pi_nodes
+  become: true
+  roles:
+    - base_pi
+    - base_user
+    - user_dotfiles
+    - base_ssh

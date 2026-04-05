@@ -1,0 +1,39 @@
+---
+# Deploys each site defined in nginx_sites. Each site needs:
+#   name:       hostname (e.g. scribe.home.arpa)
+#   root:       document root path (from host_vars or group_vars)
+#   autoindex:  true/false — directory listing for media/PDF serving
+
+- name: Ensure document roots exist
+  ansible.builtin.file:
+    path: "{{ item.root }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+  become: true
+  loop: "{{ nginx_sites }}"
+  tags: [nginx, sites]
+
+- name: Deploy Nginx site configs
+  ansible.builtin.template:
+    src: site.conf.j2
+    dest: "/etc/nginx/sites-available/{{ item.name }}.conf"
+    owner: root
+    group: root
+    mode: '0644'
+    backup: true
+  become: true
+  loop: "{{ nginx_sites }}"
+  notify: restart nginx
+  tags: [nginx, sites]
+
+- name: Enable Nginx sites
+  ansible.builtin.file:
+    src: "/etc/nginx/sites-available/{{ item.name }}.conf"
+    dest: "/etc/nginx/sites-enabled/{{ item.name }}.conf"
+    state: link
+  become: true
+  loop: "{{ nginx_sites }}"
+  notify: restart nginx
+  tags: [nginx, sites]

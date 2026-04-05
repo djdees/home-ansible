@@ -1,0 +1,15 @@
+---
+# playbooks/base-docker.yml
+# Installs Docker CE on infra_servers (hunin, munin).
+# Handles Ubuntu and Debian repo URLs automatically.
+# Also adds djdees to the docker group alongside fixer.
+#
+# Usage:
+#   ansible-playbook playbooks/base-docker.yml --ask-vault-pass
+#   ansible-playbook playbooks/base-docker.yml --limit hunin --ask-vault-pass
+
+- name: Docker CE setup
+  hosts: infra_servers
+  become: true
+  roles:
+    - base_docker

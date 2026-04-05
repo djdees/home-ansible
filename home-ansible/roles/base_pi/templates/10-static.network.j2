@@ -1,0 +1,10 @@
+# /etc/systemd/network/10-static.network — managed by Ansible (base_pi role)
+# Used on hosts where systemd-networkd is the active network service.
+[Match]
+Name=eth0
+
+[Network]
+Address={{ pi_static_ip }}/24
+Gateway={{ home_gateway }}
+DNS={{ home_dns_primary }}
+DNS={{ home_dns_fallback }}

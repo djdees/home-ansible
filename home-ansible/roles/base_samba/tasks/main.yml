@@ -1,0 +1,8 @@
+---
+- name: Import RedHat Samba tasks
+  ansible.builtin.import_tasks: redhat.yml
+  when: ansible_facts['os_family'] | lower == 'redhat'
+
+- name: Import Debian Samba tasks
+  ansible.builtin.import_tasks: debian.yml
+  when: ansible_facts['os_family'] | lower == 'debian'

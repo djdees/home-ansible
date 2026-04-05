@@ -1,0 +1,22 @@
+---
+# playbooks/apache-setup.yml
+# Deploys Apache2 with sites defined in host_vars/<host>/vars.yml.
+# Document roots and site names are per-host — no role vars to edit.
+#
+# Usage:
+#   ansible-playbook playbooks/apache-setup.yml --limit scribe --ask-vault-pass
+#
+# To update site config only (no reinstall):
+#   ansible-playbook playbooks/apache-setup.yml --limit scribe \
+#     --tags sites --ask-vault-pass
+#
+# Tag reference:
+#   install  — install Apache2, enable modules, disable default site
+#   sites    — deploy/update virtualhost configs
+#   apache   — everything above
+
+- name: Apache2 web server setup
+  hosts: pi_servers
+  become: true
+  roles:
+    - web_apache
