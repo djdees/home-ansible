@@ -1,0 +1,23 @@
+---
+- name: Create Grafana data directory
+  ansible.builtin.file:
+    path: "{{ grafana_data_dir }}"
+    state: directory
+    owner: "472"  # grafana container user UID
+    group: "472"
+    mode: '0755'
+  become: true
+  tags: [grafana, dirs]
+
+- name: Create Grafana provisioning directories
+  ansible.builtin.file:
+    path: "{{ grafana_provisioning_dir }}/{{ item }}"
+    state: directory
+    owner: "472"
+    group: "472"
+    mode: '0755'
+  loop:
+    - dashboards
+    - datasources
+  become: true
+  tags: [grafana, dirs]

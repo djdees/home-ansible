@@ -59,7 +59,7 @@
       - /tmp/clickhouse_otel_schema.sql
   become: false
   changed_when: false
-  no_log: true
+  no_log: "{{ ansible_no_log_tasks | default(true) }}"
   tags: [clickhouse, schema]
 
 - name: Remove schema SQL tempfile from inside container

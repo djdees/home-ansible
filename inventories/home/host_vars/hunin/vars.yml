@@ -1,6 +1,6 @@
 ---
 # inventories/home/host_vars/hunin/vars.yml
-# hunin — Ubuntu 24.04 LTS, primary Docker host
+# hunin - Ubuntu 24.04 LTS, primary Docker host
 # Network managed by netplan + systemd-networkd
 static_ip: "192.168.1.84"
 
@@ -11,10 +11,20 @@ clickhouse_data_dir:   "/data/clickhouse/data"
 clickhouse_logs_dir:   "/data/clickhouse/logs"
 clickhouse_config_dir: "/data/clickhouse/config"
 
-# hunin has plenty of RAM — bump metrics TTL to 6 months.
+# hunin has plenty of RAM - bump metrics TTL to 6 months.
 clickhouse_metrics_ttl_days: 180
 
 # ── OpenTelemetry Collector ───────────────────────────────────────────────────
 # hunin runs Docker so we want Docker stats in addition to host metrics.
 otel_collect_docker_stats: true
 otel_service_name: "hunin"
+
+# ── Grafana ───────────────────────────────────────────────────────────────────
+grafana_data_dir: "/data/grafana/data"
+grafana_provisioning_dir: "/data/grafana/provisioning"
+
+# ── Reverse proxy ─────────────────────────────────────────────────────────────
+proxy_config_dir: "/data/proxy/conf.d"
+proxy_certs_dir: "/data/proxy/certs"
+proxy_static_dir: "/data/proxy/www"
+proxy_logs_dir: "/data/proxy/logs"

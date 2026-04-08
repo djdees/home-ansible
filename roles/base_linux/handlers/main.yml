@@ -1,2 +1,7 @@
 ---
-# No handlers required for base_linux.
+- name: restart systemd-timesyncd
+  ansible.builtin.systemd:
+    name: systemd-timesyncd
+    state: restarted
+  become: true
+  listen: "restart systemd-timesyncd"

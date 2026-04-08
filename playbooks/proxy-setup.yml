@@ -1,0 +1,35 @@
+---
+# playbooks/proxy-setup.yml
+# Deploys the Chainguard nginx reverse proxy on hunin.
+# Handles TLS termination, HTTP->HTTPS redirect, and proxies internal services.
+#
+# Adding a new service:
+#   1. Add a conf.d template to roles/proxy/templates/conf.d/
+#   2. Add a deploy task to roles/proxy/tasks/configure.yml
+#   3. Add network connection for the new container in roles/proxy/tasks/network.yml
+#   4. Run: ansible-playbook playbooks/proxy-setup.yml --tags configure
+#
+# To swap in Vault-issued certs without Ansible:
+#   Drop fullchain.pem and privkey.pem into /data/proxy/certs/ on hunin
+#   then: docker restart proxy
+#
+# Prerequisites:
+#   - Grafana must be running (grafana-setup.yml)
+#   - openssl must be available on hunin (for self-signed cert generation)
+#
+# Usage:
+#   ansible-playbook playbooks/proxy-setup.yml
+#
+# Tag reference:
+#   dirs       - create storage directories
+#   certs      - generate self-signed cert (skipped if cert exists)
+#   network    - create proxy_net, connect containers
+#   configure  - deploy nginx.conf and conf.d configs
+#   container  - pull image and run proxy container
+#   proxy      - all of the above
+
+- name: Nginx reverse proxy setup
+  hosts: hunin
+  become: true
+  roles:
+    - proxy

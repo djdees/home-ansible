@@ -6,3 +6,6 @@
 - name: Import RedHat tasks
   ansible.builtin.import_tasks: redhat.yml
   when: ansible_facts['os_family'] | lower == 'redhat'
+
+- name: Import timesyncd tasks
+  ansible.builtin.import_tasks: timesyncd.yml

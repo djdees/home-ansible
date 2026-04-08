@@ -1,0 +1,28 @@
+---
+# playbooks/grafana-setup.yml
+# Deploys Grafana in Docker on hunin with ClickHouse datasource and
+# a provisioned home metrics dashboard.
+#
+# Prerequisites:
+#   - ClickHouse must be running (clickhouse-setup.yml)
+#   - otel-setup.yml must have run so data is flowing
+#   - vault_grafana_admin_password and vault_clickhouse_otel_password in vault
+#   - /data/grafana must exist on hunin's attached storage
+#
+# Usage:
+#   ansible-playbook playbooks/grafana-setup.yml --ask-vault-pass
+#
+# To update dashboard/datasource only (no container restart unless changed):
+#   ansible-playbook playbooks/grafana-setup.yml --tags provision
+#
+# Tag reference:
+#   dirs       - create data/provisioning directories
+#   provision  - deploy datasource, dashboard configs and JSON
+#   container  - pull image and run container
+#   grafana    - all of the above
+
+- name: Grafana Docker setup
+  hosts: hunin
+  become: true
+  roles:
+    - grafana

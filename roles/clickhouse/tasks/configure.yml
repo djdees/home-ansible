@@ -24,6 +24,6 @@
     mode: '0644'
     backup: true
   become: true
-  no_log: true
+  no_log: "{{ ansible_no_log_tasks | default(true) }}"
   notify: restart clickhouse
   tags: [clickhouse, configure]

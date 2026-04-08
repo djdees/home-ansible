@@ -1,0 +1,19 @@
+---
+# /etc/grafana/provisioning/datasources/clickhouse.yaml
+# Managed by Ansible (grafana role)
+apiVersion: 1
+datasources:
+  - name: ClickHouse
+    type: grafana-clickhouse-datasource
+    uid: clickhouse-otel
+    isDefault: true
+    jsonData:
+      host: {{ grafana_clickhouse_host }}
+      port: {{ grafana_clickhouse_port }}
+      username: {{ grafana_clickhouse_user }}
+      defaultDatabase: {{ grafana_clickhouse_database }}
+      protocol: native
+      secure: false
+    secureJsonData:
+      password: "{{ vault_clickhouse_otel_password }}"
+    editable: false

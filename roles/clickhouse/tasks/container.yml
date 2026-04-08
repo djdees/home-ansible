@@ -35,5 +35,5 @@
       - NET_ADMIN
       - IPC_LOCK
   become: true
-  no_log: true
+  no_log: "{{ ansible_no_log_tasks | default(true) }}"
   tags: [clickhouse, container]

@@ -75,7 +75,6 @@ exporters:
       num_consumers: 2
       queue_size: 100
 
-  # Debug exporter - remove or set verbosity: basic in production
   debug:
     verbosity: basic
     sampling_initial: 5
@@ -85,6 +84,13 @@ service:
   telemetry:
     logs:
       level: warn
+    metrics:
+      readers:
+        - pull:
+            exporter:
+              prometheus:
+                host: 0.0.0.0
+                port: 8888
 
   pipelines:
 {% if otel_collect_host_metrics or otel_collect_docker_stats %}
@@ -97,11 +103,11 @@ service:
         - docker_stats
 {% endif %}
       processors: [batch, resourcedetection, resource]
-      exporters: [clickhouse]
+      exporters: [clickhouse, debug]
 {% endif %}
 {% if otel_collect_journald_logs %}
     logs:
       receivers: [journald]
       processors: [batch, resourcedetection, resource]
-      exporters: [clickhouse]
+      exporters: [clickhouse, debug]
 {% endif %}

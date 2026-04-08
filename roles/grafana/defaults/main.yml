@@ -1,0 +1,25 @@
+---
+# roles/grafana/defaults/main.yml
+
+grafana_image: "grafana/grafana-oss"
+grafana_image_tag: "latest"
+grafana_container_name: "grafana"
+
+# Host port Grafana listens on
+grafana_port: 3000
+
+# Data and provisioning directories on the host
+grafana_data_dir: "/data/grafana/data"
+grafana_provisioning_dir: "/data/grafana/provisioning"
+
+# ClickHouse connection for the datasource
+# Points at the local ClickHouse container on hunin
+grafana_clickhouse_host: "{{ ansible_host }}"
+grafana_clickhouse_port: 8123
+grafana_clickhouse_database: "otel"
+grafana_clickhouse_user: "otel_ingest"
+# Password from vault: vault_clickhouse_otel_password
+
+# Admin credentials — from vault
+# vault_grafana_admin_password must be set in vault
+grafana_admin_user: "admin"

@@ -1,0 +1,32 @@
+---
+# roles/proxy/tasks/container.yml
+# Runs the Chainguard nginx container.
+# The image runs as uid 65532 (non-root) so it cannot bind 80/443 directly.
+# Docker maps host ports 80->8080 and 443->8443 inside the container.
+
+- name: Pull proxy image
+  community.docker.docker_image:
+    name: "{{ proxy_image }}:{{ proxy_image_tag }}"
+    source: pull
+  become: true
+  tags: [proxy, container]
+
+- name: Run proxy container
+  community.docker.docker_container:
+    name: "{{ proxy_container_name }}"
+    image: "{{ proxy_image }}:{{ proxy_image_tag }}"
+    state: started
+    restart_policy: unless-stopped
+    ports:
+      - "80:{{ proxy_internal_http_port }}"
+      - "443:{{ proxy_internal_https_port }}"
+    volumes:
+      - "{{ proxy_config_dir }}/../nginx.conf:/etc/nginx/nginx.conf:ro"
+      - "{{ proxy_config_dir }}:/etc/nginx/conf.d:ro"
+      - "{{ proxy_certs_dir }}:/etc/nginx/certs:ro"
+      - "{{ proxy_static_dir }}:/var/lib/nginx/html:ro"
+      - "{{ proxy_logs_dir }}:/var/log/nginx"
+    networks:
+      - name: "{{ proxy_network_name }}"
+  become: true
+  tags: [proxy, container]

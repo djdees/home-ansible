@@ -1,0 +1,33 @@
+---
+# roles/base_linux/tasks/timesyncd.yml
+# Configures systemd-timesyncd NTP on all Linux hosts.
+# NTP servers are defined in group_vars/all/vars.yml so all hosts use the
+# same server list (pihole as primary, public pools as fallback).
+
+- name: Ensure timesyncd drop-in directory exists
+  ansible.builtin.file:
+    path: /usr/local/lib/systemd/timesyncd.conf.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+  tags: [base_linux, ntp]
+
+- name: Deploy timesyncd NTP config
+  ansible.builtin.template:
+    src: timesyncd.conf.j2
+    dest: /usr/local/lib/systemd/timesyncd.conf.d/home.conf
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  notify: restart systemd-timesyncd
+  tags: [base_linux, ntp]
+
+- name: Enable NTP synchronisation
+  ansible.builtin.command:
+    cmd: /usr/bin/timedatectl set-ntp true
+  become: true
+  changed_when: false
+  tags: [base_linux, ntp]

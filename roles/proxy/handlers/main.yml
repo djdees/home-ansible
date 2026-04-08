@@ -1,0 +1,6 @@
+---
+- name: reload proxy
+  community.docker.docker_container_exec:
+    container: "{{ proxy_container_name }}"
+    command: nginx -s reload
+  become: true

@@ -33,6 +33,46 @@
   become: true
   tags: [otel, install]
 
+- name: Remove any pre-existing manual otelcol-contrib service file
+  ansible.builtin.file:
+    path: /etc/systemd/system/otelcol-contrib.service
+    state: absent
+  become: true
+  notify: restart otelcol
+  tags: [otel, install]
+
+- name: Remove legacy manual otelcol-contrib binary if present
+  ansible.builtin.file:
+    path: /usr/local/bin/otelcol-contrib
+    state: absent
+  become: true
+  tags: [otel, install]
+
+- name: Remove legacy manual otelcol config directory if present
+  ansible.builtin.file:
+    path: /etc/otel
+    state: absent
+  become: true
+  tags: [otel, install]
+
+- name: Add otelcol-contrib user to docker group for docker_stats receiver
+  ansible.builtin.user:
+    name: otelcol-contrib
+    groups: docker
+    append: true
+  become: true
+  notify: restart otelcol
+  tags: [otel, install]
+
+- name: Add otelcol-contrib user to systemd-journal group for journald receiver
+  ansible.builtin.user:
+    name: otelcol-contrib
+    groups: systemd-journal
+    append: true
+  become: true
+  notify: restart otelcol
+  tags: [otel, install]
+
 - name: Enable otelcol-contrib service
   ansible.builtin.systemd:
     name: otelcol-contrib

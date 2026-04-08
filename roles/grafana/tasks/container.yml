@@ -1,0 +1,33 @@
+---
+# roles/grafana/tasks/container.yml
+# Runs Grafana OSS in Docker. Admin password is set via env var from vault.
+# The ClickHouse plugin is installed at startup via GF_INSTALL_PLUGINS.
+
+- name: Pull Grafana image
+  community.docker.docker_image:
+    name: "{{ grafana_image }}:{{ grafana_image_tag }}"
+    source: pull
+  become: true
+  tags: [grafana, container]
+
+- name: Run Grafana container
+  community.docker.docker_container:
+    name: "{{ grafana_container_name }}"
+    image: "{{ grafana_image }}:{{ grafana_image_tag }}"
+    state: started
+    restart_policy: unless-stopped
+    env:
+      GF_SECURITY_ADMIN_USER: "{{ grafana_admin_user }}"
+      GF_SECURITY_ADMIN_PASSWORD: "{{ vault_grafana_admin_password }}"
+      GF_INSTALL_PLUGINS: "grafana-clickhouse-datasource"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_SERVER_DOMAIN: "grafana.home.arpa"
+      GF_SERVER_ROOT_URL: "https://grafana.home.arpa"
+    volumes:
+      - "{{ grafana_data_dir }}:/var/lib/grafana"
+      - "{{ grafana_provisioning_dir }}:/etc/grafana/provisioning"
+    networks:
+      - name: "{{ proxy_network_name | default('proxy_net') }}"
+  become: false
+  no_log: "{{ ansible_no_log_tasks | default(true) }}"
+  tags: [grafana, container]

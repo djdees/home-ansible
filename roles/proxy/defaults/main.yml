@@ -1,0 +1,25 @@
+---
+# roles/proxy/defaults/main.yml
+
+proxy_image: "cgr.dev/chainguard/nginx"
+proxy_image_tag: "latest"
+proxy_container_name: "proxy"
+
+# Directories on attached storage
+proxy_config_dir: "/data/proxy/conf.d"
+proxy_certs_dir: "/data/proxy/certs"
+proxy_static_dir: "/data/proxy/www"
+proxy_logs_dir: "/data/proxy/logs"
+
+# Docker network shared with proxied services
+proxy_network_name: "proxy_net"
+
+# Internal ports nginx listens on (unprivileged -- chainguard image runs as uid 65532)
+# Docker maps these to host ports 80/443
+proxy_internal_http_port: 8080
+proxy_internal_https_port: 8443
+
+# TLS certificate paths inside the container
+# Place fullchain.pem and privkey.pem in proxy_certs_dir before running.
+proxy_cert_path: "/etc/nginx/certs/fullchain.pem"
+proxy_key_path: "/etc/nginx/certs/privkey.pem"

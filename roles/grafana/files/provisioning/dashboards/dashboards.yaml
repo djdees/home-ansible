@@ -1,0 +1,12 @@
+---
+# /etc/grafana/provisioning/dashboards/dashboards.yaml
+# Managed by Ansible (grafana role)
+apiVersion: 1
+providers:
+  - name: home
+    type: file
+    disableDeletion: true
+    updateIntervalSeconds: 30
+    allowUiUpdates: false
+    options:
+      path: /etc/grafana/provisioning/dashboards/json

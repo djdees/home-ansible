@@ -1,0 +1,27 @@
+---
+# roles/proxy/tasks/configure.yml
+# Deploys nginx.conf and all conf.d site configs.
+# Add new services by adding a template to roles/proxy/templates/conf.d/
+# and a corresponding task here.
+
+- name: Deploy nginx main config
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: "{{ proxy_config_dir }}/../nginx.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  notify: reload proxy
+  tags: [proxy, configure]
+
+- name: Deploy Grafana proxy config
+  ansible.builtin.template:
+    src: conf.d/grafana.conf.j2
+    dest: "{{ proxy_config_dir }}/grafana.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  notify: reload proxy
+  tags: [proxy, configure]

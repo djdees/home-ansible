@@ -1,0 +1,9 @@
+---
+- name: Import directory setup tasks
+  ansible.builtin.import_tasks: dirs.yml
+
+- name: Import provisioning deploy tasks
+  ansible.builtin.import_tasks: provision.yml
+
+- name: Import container tasks
+  ansible.builtin.import_tasks: container.yml

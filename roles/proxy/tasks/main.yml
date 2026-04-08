@@ -1,0 +1,15 @@
+---
+- name: Import directory setup tasks
+  ansible.builtin.import_tasks: dirs.yml
+
+- name: Import TLS certificate tasks
+  ansible.builtin.import_tasks: certs.yml
+
+- name: Import Docker network tasks
+  ansible.builtin.import_tasks: network.yml
+
+- name: Import nginx config tasks
+  ansible.builtin.import_tasks: configure.yml
+
+- name: Import container tasks
+  ansible.builtin.import_tasks: container.yml

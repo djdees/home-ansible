@@ -41,7 +41,6 @@ server:
     # ── Infrastructure ───────────────────────────────────────────────────────
     local-data: "pihole.home.arpa.   IN A 192.168.1.8"
     local-data: "garmr.home.arpa.    IN A 192.168.1.5"
-    local-data: "scribe.home.arpa.   IN A 192.168.1.83"
 
     # ── Raspberry Pi lab nodes ───────────────────────────────────────────────
     local-data: "pi00.home.arpa.     IN A 192.168.1.90"
@@ -54,10 +53,13 @@ server:
     local-data: "scribe.home.arpa.   IN A 192.168.1.83"
     local-data: "theCity.home.arpa.  IN A 192.168.1.83"
 
-
-    # ── Server Nodes ────────────────────────────────────────────────
+    # ── Server nodes ─────────────────────────────────────────────────────────
     local-data: "hunin.home.arpa.    IN A 192.168.1.84"
+    local-data: "grafana.home.arpa.  IN A 192.168.1.84"
     local-data: "munin.home.arpa.    IN A 192.168.1.85"
+
+    # ── Control machine ──────────────────────────────────────────────────────
+    local-data: "muspell.home.arpa.  IN A 192.168.1.198"
 
     # ── Reverse (PTR) records ────────────────────────────────────────────────
     local-data-ptr: "192.168.1.8   pihole.home.arpa."
@@ -72,3 +74,4 @@ server:
     local-data-ptr: "192.168.1.83  scribe.home.arpa."
     local-data-ptr: "192.168.1.84  hunin.home.arpa."
     local-data-ptr: "192.168.1.85  munin.home.arpa."
+    local-data-ptr: "192.168.1.198 muspell.home.arpa."

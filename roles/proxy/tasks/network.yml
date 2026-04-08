@@ -1,0 +1,12 @@
+---
+# roles/proxy/tasks/network.yml
+# Creates the shared Docker network only.
+# Each service container (grafana, superset, etc.) is responsible for
+# joining this network via its own role's container task.
+
+- name: Create proxy Docker network
+  community.docker.docker_network:
+    name: "{{ proxy_network_name }}"
+    state: present
+  become: true
+  tags: [proxy, network]

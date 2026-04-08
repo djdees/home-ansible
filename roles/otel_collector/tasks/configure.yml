@@ -10,20 +10,10 @@
     src: otelcol.env.j2
     dest: /etc/otelcol-contrib/otelcol.env
     owner: root
-    group: root
-    mode: '0600'
+    group: otelcol-contrib
+    mode: '0640'
   become: true
-  no_log: true
-  notify: restart otelcol
-  tags: [otel, configure]
-
-- name: Ensure systemd unit loads the environment file
-  ansible.builtin.lineinfile:
-    path: /lib/systemd/system/otelcol-contrib.service
-    insertafter: '^\[Service\]'
-    line: 'EnvironmentFile=/etc/otelcol-contrib/otelcol.env'
-    regexp: '^EnvironmentFile='
-  become: true
+  no_log: "{{ ansible_no_log_tasks | default(true) }}"
   notify: restart otelcol
   tags: [otel, configure]
 
@@ -32,7 +22,7 @@
     src: otelcol.yaml.j2
     dest: /etc/otelcol-contrib/config.yaml
     owner: root
-    group: root
+    group: otelcol-contrib
     mode: '0640'
     backup: true
     validate: otelcol-contrib validate --config=%s

@@ -1,0 +1,51 @@
+---
+# roles/proxy/tasks/certs.yml
+# Expects TLS certificates to already exist at proxy_certs_dir.
+# Place certs manually or via Vault before running proxy-setup.yml:
+#   fullchain.pem -- certificate + intermediates (mode 644)
+#   privkey.pem   -- private key (mode 640, group 65532)
+#
+# For a quick self-signed cert on hunin:
+#   sudo openssl req -x509 -nodes -newkey rsa:4096 \
+#     -keyout /data/proxy/certs/privkey.pem \
+#     -out /data/proxy/certs/fullchain.pem \
+#     -days 3650 -subj "/CN=*.home.arpa" \
+#     -addext "subjectAltName=DNS:*.home.arpa,DNS:home.arpa"
+#   sudo chmod 644 /data/proxy/certs/fullchain.pem
+#   sudo chown root:65532 /data/proxy/certs/privkey.pem
+#   sudo chmod 640 /data/proxy/certs/privkey.pem
+#
+# When Vault is ready, drop in new certs and: docker restart proxy
+
+- name: Check TLS certificate exists
+  ansible.builtin.stat:
+    path: "{{ proxy_certs_dir }}/fullchain.pem"
+  register: proxy_cert_stat
+  become: true
+  tags: [proxy, certs]
+
+- name: Fail if TLS certificate is missing
+  ansible.builtin.fail:
+    msg: >
+      TLS certificate not found at {{ proxy_certs_dir }}/fullchain.pem.
+      See roles/proxy/tasks/certs.yml for instructions.
+  when: not proxy_cert_stat.stat.exists
+  tags: [proxy, certs]
+
+- name: Ensure cert is readable by nginx (uid 65532)
+  ansible.builtin.file:
+    path: "{{ proxy_certs_dir }}/fullchain.pem"
+    owner: root
+    group: "65532"
+    mode: '0644'
+  become: true
+  tags: [proxy, certs]
+
+- name: Ensure key is readable only by root and nginx (uid 65532)
+  ansible.builtin.file:
+    path: "{{ proxy_certs_dir }}/privkey.pem"
+    owner: root
+    group: "65532"
+    mode: '0640'
+  become: true
+  tags: [proxy, certs]
