@@ -14,8 +14,9 @@
   ansible.builtin.get_url:
     url: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otel_version }}/otelcol-contrib_{{ otel_version }}_linux_{{ otel_deb_arch }}.deb"
     dest: "/tmp/otelcol-contrib_{{ otel_version }}_linux_{{ otel_deb_arch }}.deb"
-    mode: '0644'
+    mode: "0644"
   become: true
+  check_mode: false
   tags: [otel, install]
 
 - name: Install otelcol-contrib .deb package
@@ -72,6 +73,25 @@
   become: true
   notify: restart otelcol
   tags: [otel, install]
+
+- name: Create systemd override directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/otelcol-contrib.service.d
+    state: directory
+    mode: "0755"
+  become: true
+
+- name: Deploy systemd override for EnvironmentFile
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/otelcol-contrib.service.d/override.conf
+    content: |
+      [Service]
+      EnvironmentFile=/etc/otelcol-contrib/otelcol.env
+    mode: "0644"
+  become: true
+  notify:
+    - reload systemd
+    - restart otelcol
 
 - name: Enable otelcol-contrib service
   ansible.builtin.systemd:

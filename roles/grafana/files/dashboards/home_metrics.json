@@ -13,8 +13,11 @@
         "name": "host",
         "label": "Host",
         "type": "query",
-        "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-otel" },
-        "query": "SELECT DISTINCT Attributes['host.name'] FROM otel.otel_metrics WHERE Attributes['host.name'] != '' ORDER BY 1",
+        "datasource": {
+          "type": "grafana-clickhouse-datasource",
+          "uid": "clickhouse-otel"
+        },
+        "query": "SELECT DISTINCT ResourceAttributes['host.name'] FROM otel.otel_metrics WHERE ResourceAttributes['host.name'] != '' ORDER BY 1",
         "multi": true,
         "includeAll": true,
         "allValue": ".*",
@@ -29,7 +32,10 @@
       "title": "CPU Usage %",
       "type": "timeseries",
       "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-otel" },
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "clickhouse-otel"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
@@ -40,7 +46,7 @@
       },
       "targets": [
         {
-          "rawSql": "SELECT toStartOfInterval(TimeUnix, INTERVAL 1 MINUTE) AS time, Attributes['host.name'] AS host, (1 - avg(Value)) * 100 AS cpu_pct FROM otel.otel_metrics WHERE MetricName = 'system.cpu.utilization' AND Attributes['state'] = 'idle' AND Attributes['host.name'] ILIKE '$host' AND TimeUnix >= now() - INTERVAL 3 HOUR GROUP BY time, host ORDER BY time ASC",
+          "rawSql": "SELECT toStartOfInterval(TimeUnix, INTERVAL 1 MINUTE) AS time, ResourceAttributes['host.name'] AS host, (1 - avg(Value)) * 100 AS cpu_pct FROM otel.otel_metrics WHERE MetricName = 'system.cpu.utilization' AND Attributes['state'] = 'idle' AND ResourceAttributes['host.name'] ILIKE '$host' AND TimeUnix >= now() - INTERVAL 3 HOUR GROUP BY time, host ORDER BY time ASC",
           "format": "time_series"
         }
       ]
@@ -50,7 +56,10 @@
       "title": "Memory Usage %",
       "type": "timeseries",
       "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-otel" },
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "clickhouse-otel"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
@@ -61,7 +70,7 @@
       },
       "targets": [
         {
-          "rawSql": "SELECT toStartOfInterval(TimeUnix, INTERVAL 1 MINUTE) AS time, Attributes['host.name'] AS host, avg(Value) * 100 AS mem_pct FROM otel.otel_metrics WHERE MetricName = 'system.memory.utilization' AND Attributes['state'] = 'used' AND Attributes['host.name'] ILIKE '$host' AND TimeUnix >= now() - INTERVAL 3 HOUR GROUP BY time, host ORDER BY time ASC",
+          "rawSql": "SELECT toStartOfInterval(TimeUnix, INTERVAL 1 MINUTE) AS time, ResourceAttributes['host.name'] AS host, avg(Value) * 100 AS mem_pct FROM otel.otel_metrics WHERE MetricName = 'system.memory.utilization' AND Attributes['state'] = 'used' AND ResourceAttributes['host.name'] ILIKE '$host' AND TimeUnix >= now() - INTERVAL 3 HOUR GROUP BY time, host ORDER BY time ASC",
           "format": "time_series"
         }
       ]
@@ -71,7 +80,10 @@
       "title": "System Load (1m)",
       "type": "timeseries",
       "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-otel" },
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "clickhouse-otel"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "short",
@@ -80,7 +92,7 @@
       },
       "targets": [
         {
-          "rawSql": "SELECT toStartOfInterval(TimeUnix, INTERVAL 1 MINUTE) AS time, Attributes['host.name'] AS host, avg(Value) AS load1 FROM otel.otel_metrics WHERE MetricName = 'system.cpu.load_average.1m' AND Attributes['host.name'] ILIKE '$host' AND TimeUnix >= now() - INTERVAL 3 HOUR GROUP BY time, host ORDER BY time ASC",
+          "rawSql": "SELECT toStartOfInterval(TimeUnix, INTERVAL 1 MINUTE) AS time, ResourceAttributes['host.name'] AS host, avg(Value) AS load1 FROM otel.otel_metrics WHERE MetricName = 'system.cpu.load_average.1m' AND ResourceAttributes['host.name'] ILIKE '$host' AND TimeUnix >= now() - INTERVAL 3 HOUR GROUP BY time, host ORDER BY time ASC",
           "format": "time_series"
         }
       ]
@@ -90,7 +102,10 @@
       "title": "Network Traffic",
       "type": "timeseries",
       "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-otel" },
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "clickhouse-otel"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "binBps",
@@ -99,11 +114,11 @@
       },
       "targets": [
         {
-          "rawSql": "SELECT toStartOfInterval(TimeUnix, INTERVAL 1 MINUTE) AS time, concat(Attributes['host.name'], ' rx') AS series, avg(Value) AS bytes FROM otel.otel_metrics WHERE MetricName = 'system.network.io' AND Attributes['direction'] = 'receive' AND Attributes['device'] NOT IN ('lo') AND Attributes['host.name'] ILIKE '$host' AND TimeUnix >= now() - INTERVAL 3 HOUR GROUP BY time, series ORDER BY time ASC",
+          "rawSql": "SELECT toStartOfInterval(TimeUnix, INTERVAL 1 MINUTE) AS time, concat(ResourceAttributes['host.name'], ' rx') AS series, avg(Value) AS bytes FROM otel.otel_metrics WHERE MetricName = 'system.network.io' AND Attributes['direction'] = 'receive' AND Attributes['device'] NOT IN ('lo') AND ResourceAttributes['host.name'] ILIKE '$host' AND TimeUnix >= now() - INTERVAL 3 HOUR GROUP BY time, series ORDER BY time ASC",
           "format": "time_series"
         },
         {
-          "rawSql": "SELECT toStartOfInterval(TimeUnix, INTERVAL 1 MINUTE) AS time, concat(Attributes['host.name'], ' tx') AS series, avg(Value) AS bytes FROM otel.otel_metrics WHERE MetricName = 'system.network.io' AND Attributes['direction'] = 'transmit' AND Attributes['device'] NOT IN ('lo') AND Attributes['host.name'] ILIKE '$host' AND TimeUnix >= now() - INTERVAL 3 HOUR GROUP BY time, series ORDER BY time ASC",
+          "rawSql": "SELECT toStartOfInterval(TimeUnix, INTERVAL 1 MINUTE) AS time, concat(ResourceAttributes['host.name'], ' tx') AS series, avg(Value) AS bytes FROM otel.otel_metrics WHERE MetricName = 'system.network.io' AND Attributes['direction'] = 'transmit' AND Attributes['device'] NOT IN ('lo') AND ResourceAttributes['host.name'] ILIKE '$host' AND TimeUnix >= now() - INTERVAL 3 HOUR GROUP BY time, series ORDER BY time ASC",
           "format": "time_series"
         }
       ]
@@ -113,7 +128,10 @@
       "title": "Disk Usage %",
       "type": "bargauge",
       "gridPos": { "x": 0, "y": 16, "w": 12, "h": 8 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-otel" },
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "clickhouse-otel"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
@@ -129,10 +147,13 @@
           }
         }
       },
-      "options": { "orientation": "horizontal", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "options": {
+        "orientation": "horizontal",
+        "reduceOptions": { "calcs": ["lastNotNull"] }
+      },
       "targets": [
         {
-          "rawSql": "SELECT concat(Attributes['host.name'], ':', Attributes['mountpoint']) AS volume, avg(Value) * 100 AS used_pct FROM otel.otel_metrics WHERE MetricName = 'system.filesystem.utilization' AND Attributes['host.name'] ILIKE '$host' AND TimeUnix >= now() - INTERVAL 10 MINUTE GROUP BY volume ORDER BY volume ASC",
+          "rawSql": "SELECT concat(ResourceAttributes['host.name'], ':', Attributes['mountpoint']) AS volume, avg(Value) * 100 AS used_pct FROM otel.otel_metrics WHERE MetricName = 'system.filesystem.utilization' AND ResourceAttributes['host.name'] ILIKE '$host' AND TimeUnix >= now() - INTERVAL 10 MINUTE GROUP BY volume ORDER BY volume ASC",
           "format": "table"
         }
       ]
@@ -142,7 +163,10 @@
       "title": "Log Events by Host",
       "type": "timeseries",
       "gridPos": { "x": 12, "y": 16, "w": 12, "h": 8 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-otel" },
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "clickhouse-otel"
+      },
       "fieldConfig": {
         "defaults": {
           "unit": "short",
@@ -151,17 +175,20 @@
       },
       "targets": [
         {
-          "rawSql": "SELECT toStartOfInterval(Timestamp, INTERVAL 1 MINUTE) AS time, ServiceName AS host, count() AS events FROM otel.otel_logs WHERE ServiceName ILIKE '$host' AND Timestamp >= now() - INTERVAL 3 HOUR GROUP BY time, host ORDER BY time ASC",
+          "rawSql": "SELECT toStartOfInterval(Timestamp, INTERVAL 1 MINUTE) AS time, ResourceAttributes['host.name'] AS host, count() AS events FROM otel.otel_logs WHERE host ILIKE '$host' AND Timestamp >= now() - INTERVAL 3 HOUR GROUP BY time, host ORDER BY time ASC",
           "format": "time_series"
         }
       ]
-    },
+    }
     {
       "id": 7,
       "title": "Current Stats",
       "type": "stat",
       "gridPos": { "x": 0, "y": 24, "w": 24, "h": 4 },
-      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-otel" },
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "clickhouse-otel"
+      },
       "fieldConfig": {
         "defaults": {
           "thresholds": {
@@ -174,18 +201,28 @@
           }
         },
         "overrides": [
-          { "matcher": { "id": "byName", "options": "CPU %" }, "properties": [{ "id": "unit", "value": "percent" }] },
-          { "matcher": { "id": "byName", "options": "Mem %" }, "properties": [{ "id": "unit", "value": "percent" }] }
+          {
+            "matcher": { "id": "byName", "options": "CPU %" },
+            "properties": [{ "id": "unit", "value": "percent" }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Mem %" },
+            "properties": [{ "id": "unit", "value": "percent" }]
+          }
         ]
       },
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "horizontal", "textMode": "value_and_name" },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "horizontal",
+        "textMode": "value_and_name"
+      },
       "targets": [
         {
-          "rawSql": "SELECT Attributes['host.name'] AS host, (1 - avg(Value)) * 100 AS \"CPU %\" FROM otel.otel_metrics WHERE MetricName = 'system.cpu.utilization' AND Attributes['state'] = 'idle' AND TimeUnix >= now() - INTERVAL 5 MINUTE GROUP BY host ORDER BY host",
+          "rawSql": "SELECT ResourceAttributes['host.name'] AS host, (1 - avg(Value)) * 100 AS \"CPU %\" FROM otel.otel_metrics WHERE MetricName = 'system.cpu.utilization' AND Attributes['state'] = 'idle' AND TimeUnix >= now() - INTERVAL 5 MINUTE GROUP BY host ORDER BY host",
           "format": "table"
         },
         {
-          "rawSql": "SELECT Attributes['host.name'] AS host, avg(Value) * 100 AS \"Mem %\" FROM otel.otel_metrics WHERE MetricName = 'system.memory.utilization' AND Attributes['state'] = 'used' AND TimeUnix >= now() - INTERVAL 5 MINUTE GROUP BY host ORDER BY host",
+          "rawSql": "SELECT ResourceAttributes['host.name'] AS host, avg(Value) * 100 AS \"Mem %\" FROM otel.otel_metrics WHERE MetricName = 'system.memory.utilization' AND Attributes['state'] = 'used' AND TimeUnix >= now() - INTERVAL 5 MINUTE GROUP BY host ORDER BY host",
           "format": "table"
         }
       ]

@@ -12,7 +12,7 @@ datasources:
       port: {{ grafana_clickhouse_port }}
       username: {{ grafana_clickhouse_user }}
       defaultDatabase: {{ grafana_clickhouse_database }}
-      protocol: native
+      protocol: http
       secure: false
     secureJsonData:
       password: "{{ vault_clickhouse_otel_password }}"

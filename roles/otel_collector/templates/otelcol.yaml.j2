@@ -21,7 +21,7 @@ receivers:
 {% endif %}
 {% if otel_collect_journald_logs %}
   journald:
-    directory: /run/log/journal
+    directory: /var/log/journal
     priority: info
     # Add specific units here to filter; empty means all units
     # units: [sshd, docker, nginx]
@@ -57,23 +57,24 @@ processors:
 
 exporters:
   clickhouse:
-    endpoint: tcp://{{ otel_clickhouse_host }}:{{ otel_clickhouse_tcp_port }}
+    endpoint: http://{{ otel_clickhouse_host }}:8123
     database: {{ otel_clickhouse_database }}
     username: {{ otel_clickhouse_user }}
     password: "${CLICKHOUSE_PASSWORD}"
-    logs_table_name:    otel_logs
-    traces_table_name:  otel_traces
+
+    # These match the table names in your new SQL schema
+    logs_table_name: otel_logs
+    traces_table_name: otel_traces
     metrics_table_name: otel_metrics
-    timeout: 10s
+
+    # Use the tuned values we verified
+    timeout: 20s
     retry_on_failure:
       enabled: true
-      initial_interval: 5s
-      max_interval: 30s
-      max_elapsed_time: 300s
     sending_queue:
       enabled: true
-      num_consumers: 2
-      queue_size: 100
+      num_consumers: 4
+      queue_size: 1000
 
   debug:
     verbosity: basic
