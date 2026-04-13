@@ -3,25 +3,27 @@
 # Per-host variables for scribe -- print server and web server.
 #
 # Document roots use the external SSD mount point as the base.
-ssd_mount: "/mnt/external"
-ssd_uuid: "98b92e94-a766-4d16-b786-bea342b463c9"
+external_mounts:
+  - path: "/www"
+    uuid: "98b92e94-a766-4d16-b786-bea342b463c9"
+    fstype: "ext4"
 
 # Nginx site definitions -- used by web_nginx role.
 nginx_sites:
   - name: "scribe.home.arpa"
-    root: "{{ ssd_mount }}/scribe"
+    root: "/www/scribe"
     autoindex: false
   - name: "thecity.home.arpa"
-    root: "{{ ssd_mount }}/thecity"
+    root: "/www/thecity"
     autoindex: true
 
 # Apache site definitions -- used by web_apache role.
 apache_sites:
   - name: "scribe.home.arpa"
-    root: "{{ ssd_mount }}/scribe"
+    root: "/www/scribe"
     autoindex: false
   - name: "thecity.home.arpa"
-    root: "{{ ssd_mount }}/thecity"
+    root: "/www/thecity"
     autoindex: true
 
 # OpenTelemetry Collector

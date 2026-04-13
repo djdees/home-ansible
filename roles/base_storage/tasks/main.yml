@@ -1,0 +1,26 @@
+---
+# roles/base_storage/tasks/main.yml
+# Generic storage mounting role. Supports Ubuntu, Lubuntu, and Raspberry Pi OS.
+# Driven by the `external_mounts` list in host_vars or group_vars.
+
+- name: Ensure mount point directories exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode | default('0755') }}"
+  loop: "{{ external_mounts | default([]) }}"
+  become: true
+  tags: [storage, mount]
+
+- name: Mount external storage via fstab
+  ansible.posix.mount:
+    path: "{{ item.path }}"
+    src: "UUID={{ item.uuid }}"
+    fstype: "{{ item.fstype | default('ext4') }}"
+    opts: "{{ item.opts | default('defaults,noatime') }}"
+    state: "{{ item.state | default('mounted') }}"
+  loop: "{{ external_mounts | default([]) }}"
+  become: true
+  tags: [storage, mount]
