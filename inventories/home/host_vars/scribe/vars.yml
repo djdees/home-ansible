@@ -1,13 +1,12 @@
 ---
 # inventories/home/host_vars/scribe/vars.yml
-# Per-host variables for scribe — print server and web server.
+# Per-host variables for scribe -- print server and web server.
 #
 # Document roots use the external SSD mount point as the base.
-# Adjust ssd_mount if your SSD is mounted at a different path.
 ssd_mount: "/mnt/external"
+ssd_uuid: "98b92e94-a766-4d16-b786-bea342b463c9"
 
-# Nginx site definitions — used by web_nginx role.
-# autoindex: true enables directory listings (useful for PDF/media browsing).
+# Nginx site definitions -- used by web_nginx role.
 nginx_sites:
   - name: "scribe.home.arpa"
     root: "{{ ssd_mount }}/scribe"
@@ -16,8 +15,7 @@ nginx_sites:
     root: "{{ ssd_mount }}/thecity"
     autoindex: true
 
-# Apache site definitions — used by web_apache role.
-# Same paths — lets you compare both servers on the same content.
+# Apache site definitions -- used by web_apache role.
 apache_sites:
   - name: "scribe.home.arpa"
     root: "{{ ssd_mount }}/scribe"

@@ -1,0 +1,64 @@
+# Logger function for warnings
+log_warn() {
+  echo "⚠️  $1" >&2
+}
+
+# Global command availability checks
+# for cmd in go jenv docker npm; do
+#   if ! command -v $cmd >/dev/null 2>&1; then
+#     log_warn "'$cmd' command not found."
+#   fi
+# done
+
+## CLI editing
+
+if [[ -o interactive ]]; then
+  bindkey -v
+  autoload -Uz edit-command-line
+  zle -N edit-command-line
+  bindkey -M vicmd v edit-command-line
+fi
+
+## Env Items
+
+## Locations
+
+
+# Go lang settings
+# export PATH="/usr/local/go/bin:$PATH"  # Ensure `go` is available first
+
+# if command -v go >/dev/null 2>&1; then
+#   export GOPATH=$(go env GOPATH)
+#   export PATH="$PATH:$GOPATH/bin"
+# else
+#   log_warn "'go' command not found. GOPATH not set."
+# fi
+# export PATH="$PATH:$GOPATH/bin"  # Now this works
+
+# Java Lang settings
+# export PATH="$HOME/.jenv/bin:$PATH"  # Ensure `jenv` is available first
+# # Check if 'jenv' is available before initializing
+# if command -v jenv >/dev/null 2>&1; then
+#   eval "$(jenv init -)"
+# else
+#   log_warn "'jenv' command not found. Java version management not initialized."
+# fi
+# export CLASSPATH=/Users/ddees/java/lib
+
+# Consolidated PATH additions with validation
+PATHS_TO_ADD=(
+  ${TOOLS}
+  # ${GO_PATH}
+  ${PYTHON39_PATH}
+)
+
+for p in "${PATHS_TO_ADD[@]}"; do
+  [ -d "$p" ] && export PATH="$PATH:$p" || log_warn "Missing path: $p"
+done
+
+## Aliases
+alias ll='ls -al'
+
+## Commands
+
+## Shortcuts

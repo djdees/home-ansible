@@ -9,3 +9,8 @@
 
 - name: Import timesyncd tasks
   ansible.builtin.import_tasks: timesyncd.yml
+- name: Ensure extended terminfo is present for clean terminal behavior
+  become: yes
+  apt:
+    name: ncurses-term
+    state: present

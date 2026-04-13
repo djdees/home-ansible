@@ -1,23 +1,41 @@
 ---
 # playbooks/scribe-setup.yml
-# Full setup for scribe — base Pi config, accounts, SSH hardening, and Nginx.
-# CUPS is not included — the current printer is network-attached and doesn't
-# need a print server. Add base_cups back here if that changes.
+# Full setup for scribe -- base Pi config, accounts, SSH hardening, Nginx,
+# and external SSD mount for web content.
 #
 # Usage:
-#   # First run — Pi still on DHCP:
+#   # First run -- Pi still on DHCP:
 #   ansible-playbook playbooks/scribe-setup.yml \
-#     -e ansible_host=192.168.1.XXX --ask-vault-pass
+#     -e ansible_host=192.168.1.XXX
 #
 #   # Subsequent runs:
-#   ansible-playbook playbooks/scribe-setup.yml --ask-vault-pass
+#   ansible-playbook playbooks/scribe-setup.yml
 #
 # To update Nginx site config only:
-#   ansible-playbook playbooks/scribe-setup.yml --tags sites --ask-vault-pass
+#   ansible-playbook playbooks/scribe-setup.yml --tags sites
 
 - name: Scribe server setup
   hosts: pi_servers
   become: true
+  tasks:
+    - name: Create SSD mount point
+      ansible.builtin.file:
+        path: "{{ ssd_mount }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+      tags: [scribe, mount]
+
+    - name: Mount external SSD via fstab
+      ansible.posix.mount:
+        path: "{{ ssd_mount }}"
+        src: "UUID={{ ssd_uuid }}"
+        fstype: ext4
+        opts: defaults,noatime
+        state: mounted
+      tags: [scribe, mount]
+
   roles:
     - base_pi
     - base_user

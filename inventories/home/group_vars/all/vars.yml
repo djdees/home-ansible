@@ -37,7 +37,7 @@ ssh_sftp_server_path: "/usr/lib/openssh/sftp-server"   # Debian/Raspbian path
 
 # ── Shell ────────────────────────────────────────────────────────────────────
 # Set to 'zsh' when ready to migrate; user_dotfiles role respects this.
-user_shell: "bash"
+user_shell: "zsh"
 
 # ── NTP ──────────────────────────────────────────────────────────────────────
 ntp_servers:

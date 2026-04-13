@@ -1,0 +1,132 @@
+#--------------------------------------------------------------------------------------------------
+# ~/.zshrc: executed by zsh for login shells.
+#
+# when                who                     did what
+# 20250602            chatgpt                 converted from .bashrc for zsh, added zsh completion
+#--------------------------------------------------------------------------------------------------
+
+[[ -o interactive ]] || return
+
+#--------------------------------------------------------------------------------------------------
+# portability across macOS and Linux
+PLATFORM=$(uname -s)
+WORK="home"
+
+if [[ "$PLATFORM" == "Darwin" ]]; then
+    AWK=/usr/bin/awk
+    CAT=/bin/cat
+    CAL=/usr/bin/cal
+    ECHO=/bin/echo
+    GREP=/usr/bin/grep
+    SED=/usr/bin/sed
+    SORT=/usr/bin/sort
+    SW_VERS=/usr/bin/sw_vers
+    SYSCTL=/usr/sbin/sysctl
+    TR=/usr/bin/tr
+    UNIQ=/usr/bin/uniq
+elif [[ "$PLATFORM" == "Linux" ]]; then
+    DISTRO=$(lsb_release -sd 2>/dev/null)
+    AWK=/usr/bin/awk
+    CAL=/usr/bin/cal
+    ECHO=/bin/echo
+    GREP=/bin/grep
+    SED=/usr/bin/sed
+fi
+
+#--------------------------------------------------------------------------------------------------
+# history settings
+HISTCONTROL="ignoreboth"
+SAVEHIST=5000
+HISTSIZE=5000
+HISTFILE=~/.zsh_history
+
+setopt appendhistory
+setopt histignoredups
+setopt sharehistory
+
+#--------------------------------------------------------------------------------------------------
+# update LINES and COLUMNS after each command
+autoload -Uz resize
+#TRAPWINCH() { resize > /dev/null }
+#TRAPWINCH() { }
+
+#--------------------------------------------------------------------------------------------------
+# lesspipe (if available)
+if [[ -x /usr/bin/lesspipe ]] ; then
+eval "$(SHELL=/bin/sh lesspipe)"
+fi
+
+#--------------------------------------------------------------------------------------------------
+# debian_chroot prompt segment
+if [[ -z "$debian_chroot" && -r /etc/debian_chroot ]] ; then
+debian_chroot=$(< /etc/debian_chroot)
+fi
+
+#--------------------------------------------------------------------------------------------------
+# Native Zsh completion setup
+autoload -Uz compinit
+compinit
+
+# Optional: Cache completions to speed up startup
+zstyle ':completion::complete:*' use-cache on
+zstyle ':completion::complete:*' cache-path ~/.zsh/cache
+
+# Optional: menu-select and descriptions
+zstyle ':completion:*' menu select
+zstyle ':completion:*' verbose true
+zstyle ':completion:*:descriptions' format '%F{green}-- %d --%f'
+zstyle ':completion:*:warnings' format '%F{yellow}No matches for: %d%f'
+zstyle ':completion:*' group-name ''
+
+# Complete hidden files when using . prefix
+zstyle ':completion:*' special-dirs true
+
+#--------------------------------------------------------------------------------------------------
+
+# Aliases
+if [[ -f ~/.zsh_aliases ]] ; then
+    source ~/.zsh_aliases
+fi
+
+# Local items not ansible managed
+if [[ -f ~/.zsh_local ]] ; then
+    source ~/.zsh_local
+fi
+
+alias tree='find . -print | sed -e "s;[^/]*/;|____;g;s;____|; |;"'
+
+#--------------------------------------------------------------------------------------------------
+
+# Prompt (Optional basic example)
+PROMPT='%F{blue}%n@%m%f:%F{green}%~%f$ '
+
+#--------------------------------------------------------------------------------------------------
+
+# Set up Vi on the CLI
+# Enable Vi Mode
+bindkey -v
+
+# Reduce 'ESC' delay to 0.1 seconds (Essential for responsive mode switching)
+export KEYTIMEOUT=1
+
+# Ensure Backspace works correctly in Insert mode (Common issue on Pi)
+bindkey '^?' backward-delete-char
+bindkey '^H' backward-delete-char
+
+# Restore standard Emacs-style history search in Vi mode
+bindkey '^R' history-incremental-search-backward
+bindkey '^S' history-incremental-search-forward
+
+# Ensure the terminal handles newlines correctly (prevents staircase effect)
+if [[ -t 1 ]]; then
+    stty opost onlcr
+fi
+
+# End of .zshrc
+
+## Reminders
+listdefs
+printf "\n\n"
+echo "Remember, JAVA is managed by jenv"
+echo "Remember, Python is managed with uv"
+printf "\n\n"

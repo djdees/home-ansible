@@ -1,0 +1,303 @@
+# listfunc: Show zsh functions with source info (FUNCTION + SOURCE).
+# - Filters to $HOME by default
+# - Pretty table with adaptive width
+# - Shows source via `whence -v`
+# - Excludes: by function name (EXCLUDES) and by source path (hard-coded case)
+listfunc() {
+  emulate -L zsh
+  setopt LOCAL_OPTIONS
+  unsetopt XTRACE VERBOSE
+
+  # Defaults
+  local include_nonhome=0 include_frameworks=0 names_only=0 no_headers=0 raw=0
+  local pattern="" base="$HOME/"
+
+  # Arg parsing (excludes are hard-coded below)
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --all|-a)          include_nonhome=1 ;;
+      --frameworks|-F)   include_frameworks=1 ;;
+      --names|-n)        names_only=1 ;;
+      --no-headers|-H)   no_headers=1 ;;
+      --raw|-r)          raw=1 ;;
+      --grep|-g)
+        shift
+        [[ $# -gt 0 ]] && pattern="$1" || { print "listfunc: --grep needs a PATTERN"; return 2; }
+        ;;
+      --path|-p)
+        shift
+        [[ $# -gt 0 ]] && base="$1" || { print "listfunc: --path needs a DIR"; return 2; }
+        [[ "$base" != */ ]] && base="${base}/"
+        ;;
+      --help|-h)
+        print "Usage: listfunc [options] [name-pattern]"
+        print "  --all/-a          include system/Homebrew functions"
+        print "  --frameworks/-F   include oh-my-zsh/zinit/etc under \$HOME"
+        print "  --names/-n        names only"
+        print "  --raw/-r          raw 'whence -v' lines"
+        print "  --grep/-g PAT     filter names containing PAT"
+        print "  --path/-p DIR     only include from DIR (default: \$HOME)"
+        print "  --no-headers/-H   hide headers"
+        return 0
+        ;;
+      *)
+        [[ -z "$pattern" ]] && pattern="$1"
+        ;;
+    esac
+    shift
+  done
+
+  # ----- Hard-coded excludes -----
+  # Exact function-name excludes (managed by installed apps)
+  local -a EXCLUDES=(
+    _docker
+    _jenv_export_hook
+  )
+  # --------------------------------
+
+  # Get function names
+  local -a fnames
+  fnames=(${(k)functions})
+
+  local -a out_lines out_names out_raw
+  local f src src_path include
+
+  for f in "${fnames[@]}"; do
+    # Skip if function name is in EXCLUDES (exact match)
+    if (( ${EXCLUDES[(Ie)$f]} )); then
+      continue
+    fi
+
+    src="$(whence -v -- "$f" 2>/dev/null)"   # "foo is a shell function from /Users/.../file"
+    src_path=""
+    if [[ "$src" == *" from "* ]]; then
+      src_path="${src##* from }"
+    fi
+
+    # Skip if the source path is one of the known “managed” locations
+    # (avoid loops/assignments to keep xtrace quiet)
+    if [[ -n "$src_path" ]]; then
+      case "$src_path" in
+        *"/.jenv/"*|*"/.docker/completions/"*)
+          continue
+          ;;
+      esac
+    fi
+
+    # Base include filter: keep only under $base (default $HOME) unless --all
+    include=1
+    if (( ! include_nonhome )); then
+      if [[ -n "$src_path" ]]; then
+        [[ "$src_path" == "$base"* ]] || include=0
+      else
+        include=0
+      fi
+    fi
+    (( include )) || continue
+
+    # Exclude common framework paths under $HOME unless --frameworks
+    if (( ! include_frameworks )) && [[ -n "$src_path" ]]; then
+      case "$src_path" in
+        *"/.oh-my-zsh/"*|*"/.zinit/"*|*"/.antigen/"*|*"/.zim/"*|*"/.zplug/"*|*"/powerlevel10k/"*)
+          continue
+          ;;
+      esac
+    fi
+
+    # Name filter (substring)
+    if [[ -n "$pattern" ]]; then
+      case "$f" in
+        *$pattern*) ;;    # pass
+        *) continue ;;
+      esac
+    fi
+
+    if (( raw )); then
+      out_raw+=("$src")
+    elif (( names_only )); then
+      out_names+=("$f")
+    else
+      # Store as two columns separated by a real tab
+      out_lines+=("$f"$'\t'"${src_path:-<no source recorded>}")
+    fi
+  done
+
+  # Output modes
+  if (( raw )); then
+    (( ${#out_raw[@]} )) || { print "No functions matched."; return 1; }
+    printf '%s\n' "${out_raw[@]}" | sort
+    return 0
+  fi
+
+  if (( names_only )); then
+    (( ${#out_names[@]} )) || { print "No functions matched."; return 1; }
+    printf '%s\n' "${out_names[@]}" | sort
+    return 0
+  fi
+
+  (( ${#out_lines[@]} )) || { print "No functions matched."; return 1; }
+
+  # ---------- Adaptive width for the FUNCTION column ----------
+  local maxlen=0 name file line
+  for line in "${out_lines[@]}"; do
+    name="${line%%$'\t'*}"
+    (( ${#name} > maxlen )) && maxlen=${#name}
+  done
+  (( maxlen > 40 )) && maxlen=40
+  (( maxlen < 12 )) && maxlen=12
+  local fmt="%-${maxlen}s %s\n"
+  # ------------------------------------------------------------
+
+  # Headers
+  if (( ! no_headers )); then
+    printf "$fmt" "FUNCTION" "SOURCE"
+    # dashed underline
+    local dashes="" i
+    for i in {1..40}; do
+      [[ $i -le $maxlen ]] && dashes="${dashes}-"
+    done
+    printf "$fmt" "$dashes" "------"
+  fi
+
+  # Rows
+  printf '%s\n' "${out_lines[@]}" \
+  | sort \
+  | while IFS=$'\t' read -r name file; do
+      printf "$fmt" "$name" "$file"
+    done
+}
+
+
+# listalias: Show zsh aliases with source text (ALIAS + EXPANSION).
+# - Pretty table with adaptive width (min 12, max 40)
+# - Excludes: by alias name via EXCLUDES array (hard-coded)
+# - Options:
+#     --names/-n        Names only
+#     --no-headers/-H   Hide headers
+#     --grep/-g PAT     Filter alias names containing PAT
+#     --help/-h         Show usage
+listalias() {
+  emulate -L zsh
+  setopt LOCAL_OPTIONS
+  unsetopt XTRACE VERBOSE
+
+  local names_only=0 no_headers=0
+  local pattern=""
+
+  # Parse args (kept minimal)
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --names|-n)      names_only=1 ;;
+      --no-headers|-H) no_headers=1 ;;
+      --grep|-g)
+        shift
+        [[ $# -gt 0 ]] && pattern="$1" || { print "listalias: --grep needs a PATTERN"; return 2; }
+        ;;
+      --help|-h)
+        print "Usage: listalias [options] [name-pattern]"
+        print "  --names/-n        names only"
+        print "  --no-headers/-H   hide headers"
+        print "  --grep/-g PAT     filter alias names containing PAT"
+        return 0
+        ;;
+      *)
+        [[ -z "$pattern" ]] && pattern="$1"
+        ;;
+    esac
+    shift
+  done
+
+  # Hard-coded excludes (managed by installed apps, or aliases you never want listed)
+  local -a EXCLUDES=( 
+    ll
+    run-help
+    which-command
+  )
+
+  # Collect alias names from the 'aliases' assoc array
+  local -a anames
+  anames=(${(k)aliases})
+
+  local -a out_lines out_names
+  local a exp
+
+  for a in "${anames[@]}"; do
+    # Skip excluded names (exact match)
+    if (( ${EXCLUDES[(Ie)$a]} )); then
+      continue
+    fi
+
+    # Name filter (substring)
+    if [[ -n "$pattern" ]]; then
+      case "$a" in
+        *$pattern*) ;;    # pass
+        *) continue ;;
+      esac
+    fi
+
+    if (( names_only )); then
+      out_names+=("$a")
+    else
+      # Pull expansion text; use the aliases[] value (raw expansion)
+      exp="${aliases[$a]}"
+      # Store as two columns separated by a real tab
+      out_lines+=("$a"$'\t'"$exp")
+    fi
+  done
+
+  if (( names_only )); then
+    (( ${#out_names[@]} )) || { print "No aliases matched."; return 1; }
+    printf '%s\n' "${out_names[@]}" | sort
+    return 0
+  fi
+
+  (( ${#out_lines[@]} )) || { print "No aliases matched."; return 1; }
+
+  # Adaptive width for the ALIAS column
+  local maxlen=0 name line
+  for line in "${out_lines[@]}"; do
+    name="${line%%$'\t'*}"
+    (( ${#name} > maxlen )) && maxlen=${#name}
+  done
+  (( maxlen > 40 )) && maxlen=40
+  (( maxlen < 12 )) && maxlen=12
+  local fmt="%-${maxlen}s %s\n"
+
+  # Headers
+  if (( ! no_headers )); then
+    printf "$fmt" "ALIAS" "EXPANSION"
+    # dashed underline
+    local dashes="" i
+    for i in {1..40}; do
+      [[ $i -le $maxlen ]] && dashes="${dashes}-"
+    done
+    printf "$fmt" "$dashes" "---------"
+  fi
+
+  # Rows
+  printf '%s\n' "${out_lines[@]}" \
+  | sort \
+  | while IFS=$'\t' read -r name exp; do
+      printf "$fmt" "$name" "$exp"
+    done
+}
+
+# listdefs: helper to show both functions and aliases together.
+# Accepts the same optional filters and forwards them to each lister.
+listdefs() {
+  emulate -L zsh
+  setopt LOCAL_OPTIONS
+  unsetopt XTRACE VERBOSE
+
+  print "=== FUNCTIONS ==="
+  if whence -w listfunc &>/dev/null; then
+    # Forward any args (like --grep foo) and suppress headers for a single combined view
+    listfunc --no-headers "$@"
+  else
+    print "(listfunc is not defined in this shell)"
+  fi
+
+  print
+  print "=== ALIASES ==="
+  listalias --no-headers "$@"
+}

@@ -1,16 +1,76 @@
 ---
-# BUG FIXED: mode was 0744 (executable bit on shell config) → 0644.
+# BUG FIXED: mode was 0744 (executable bit on shell config) -> 0644.
 # CONSOLIDATED: base_home/files/bashrc and base_pi/templates/bashrc were
 # two slightly different copies of the same file. Now one template with
 # a variable controlling the PS1 style.
 
-- name: Deploy .bashrc
+- name: Deploy .bashrc for {{ ansible_user }}
   ansible.builtin.template:
     src: bashrc.j2
     dest: "/home/{{ ansible_user }}/.bashrc"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_group }}"
-    mode: '0644'
+    mode: "0644"
+  tags: [dotfiles]
+
+- name: Deploy .zshrc for {{ ansible_user }}
+  ansible.builtin.copy:
+    src: zshrc
+    dest: "/home/{{ ansible_user }}/.zshrc"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_group }}"
+    mode: "0644"
+  when: user_shell == 'zsh'
+  tags: [dotfiles]
+
+- name: Deploy .zshrc for {{ personal_user }}
+  ansible.builtin.copy:
+    src: zshrc
+    dest: "/home/{{ personal_user }}/.zshrc"
+    owner: "{{ personal_user }}"
+    group: "{{ personal_user }}"
+    mode: "0644"
+  when: user_shell == 'zsh'
+  tags: [dotfiles]
+
+- name: Deploy .zsh_aliases for {{ ansible_user }}
+  ansible.builtin.copy:
+    src: zsh_aliases
+    dest: "/home/{{ ansible_user }}/.zsh_aliases"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_group }}"
+    mode: "0644"
+  when: user_shell == 'zsh'
+  tags: [dotfiles]
+
+- name: Deploy .zsh_aliases for {{ personal_user }}
+  ansible.builtin.copy:
+    src: zsh_aliases
+    dest: "/home/{{ personal_user }}/.zsh_aliases"
+    owner: "{{ personal_user }}"
+    group: "{{ personal_user }}"
+    mode: "0644"
+  when: user_shell == 'zsh'
+  tags: [dotfiles]
+
+- name: Deploy .zsh_functions for {{ ansible_user }}
+  ansible.builtin.copy:
+    src: zsh_functions
+    dest: "/home/{{ ansible_user }}/.zsh_functions"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_group }}"
+    mode: "0644"
+  when: user_shell == 'zsh'
+  tags: [dotfiles]
+
+- name: Deploy .zsh_functions for {{ personal_user }}
+  ansible.builtin.copy:
+    src: zsh_functions
+    dest: "/home/{{ personal_user }}/.zsh_functions"
+    owner: "{{ personal_user }}"
+    group: "{{ personal_user }}"
+    mode: "0644"
+  when: user_shell == 'zsh'
   tags: [dotfiles]
 
 - name: Deploy .bash_profile
@@ -19,14 +79,23 @@
     dest: "/home/{{ ansible_user }}/.bash_profile"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_group }}"
-    mode: '0644'
+    mode: "0644"
   tags: [dotfiles]
 
-- name: Deploy .vimrc
+- name: Deploy .vimrc for {{ ansible_user }}
   ansible.builtin.copy:
     src: vimrc
     dest: "/home/{{ ansible_user }}/.vimrc"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_group }}"
-    mode: '0644'
+    mode: "0644"
+  tags: [dotfiles]
+
+- name: Deploy .vimrc for {{ personal_user }}
+  ansible.builtin.copy:
+    src: vimrc
+    dest: "/home/{{ personal_user }}/.vimrc"
+    owner: "{{ personal_user }}"
+    group: "{{ personal_user }}"
+    mode: "0644"
   tags: [dotfiles]

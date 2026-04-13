@@ -1,1 +1,4 @@
 ---
+# Set to true in host_vars for Pis that use WiFi.
+# Wired Pis (scribe, pihole) should leave this false (the default).
+configure_wifi: false

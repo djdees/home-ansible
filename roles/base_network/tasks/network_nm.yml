@@ -49,6 +49,9 @@
       nmcli device wifi connect "{{ wifi_ssid }}"
       password "{{ wifi_psk }}"
   become: true
-  when: wifi_ssid is defined and wifi_psk is defined
+  when:
+    - configure_wifi | default(false)
+    - wifi_ssid is defined
+    - wifi_psk is defined
   ignore_errors: true
   tags: [base_network, network, setup, wifi]
