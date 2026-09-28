@@ -63,6 +63,7 @@
       - containerd.io
       - docker-buildx-plugin
       - docker-compose-plugin
+      - python3-pip
     state: present
   become: true
   tags: [docker, install]
@@ -89,5 +90,20 @@
     enabled: true
     state: started
     daemon_reload: true
+  become: true
+  tags: [docker, install]
+
+- name: Remove system python3-docker package (shadows pip install)
+  ansible.builtin.apt:
+    name: python3-docker
+    state: absent
+  become: true
+  tags: [docker, install]
+
+- name: Upgrade Docker Python library to fix requests compatibility
+  ansible.builtin.pip:
+    name: docker>=7.0.0
+    state: present
+    extra_args: --break-system-packages
   become: true
   tags: [docker, install]

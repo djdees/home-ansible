@@ -1,0 +1,7 @@
+---
+- name: VictoriaMetrics Setup
+  hosts: victoriametrics_nodes
+  become: true
+  roles:
+    - victoriametrics-base
+    - victoriametrics-instance

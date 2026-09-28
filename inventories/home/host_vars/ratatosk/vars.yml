@@ -1,22 +1,16 @@
 ---
-# inventories/home/host_vars/hunin/vars.yml
+# inventories/home/host_vars/ratatosk/vars.yml
 # hunin - Ubuntu 24.04 LTS, primary Docker host
 # Network managed by netplan + systemd-networkd
-static_ip: "192.168.1.84"
+static_ip: "192.168.1.51"
 
-# ── ClickHouse ────────────────────────────────────────────────────────────────
-# Data lives on the attached storage at /data/clickhouse.
-# Subdirs (data, logs, config) are created by the clickhouse role.
-clickhouse_data_dir:   "/data/clickhouse/data"
-clickhouse_logs_dir:   "/data/clickhouse/logs"
-clickhouse_config_dir: "/data/clickhouse/config"
+# ── VictoriaMetrics ───────────────────────────────────────────────────────────
+# Data lives on the attached storage at /data/victoriametrics.
+victoriametrics_data_otel_dir: "/data/victoriametrics/otel"
 
-# hunin has plenty of RAM - bump metrics TTL to 6 months.
-clickhouse_metrics_ttl_days: 180
 
 # ── OpenTelemetry Collector ───────────────────────────────────────────────────
-# hunin runs Docker so we want Docker stats in addition to host metrics.
-otel_service_name: "hunin"
+otel_service_name: "ratatosk"
 otel_collect_host_metrics: true
 otel_collect_journald_logs: false
 otel_collect_docker_stats: true
@@ -30,3 +24,16 @@ proxy_config_dir: "/data/proxy/conf.d"
 proxy_certs_dir: "/data/proxy/certs"
 proxy_static_dir: "/data/proxy/www"
 proxy_logs_dir: "/data/proxy/logs"
+
+# --- VictoriaMedia Container App set up ---------------------------------------
+# Host vars for ratatosk
+victoriametrics_apps:
+  otel:
+    port: 8428
+    retention: 30d
+    extra_flags:
+      - "--opentelemetry.usePrometheusNaming"
+  health-sync:
+    port: 8429
+    retention: 1y
+    extra_flags: []

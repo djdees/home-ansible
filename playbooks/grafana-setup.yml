@@ -22,7 +22,7 @@
 #   grafana    - all of the above
 
 - name: Grafana Docker setup
-  hosts: hunin
+  hosts: grafana_nodes
   become: true
   roles:
     - grafana

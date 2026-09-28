@@ -1,0 +1,26 @@
+- name: Set convenient facts for instance
+  set_fact:
+    app_name: "{{ app_item.key }}"
+    app_config: "{{ app_item.value }}"
+
+- name: Ensure app-specific directories exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: '0755'
+  loop:
+    - "/data/victoriametrics/{{ app_name }}"
+    - "/opt/victoriametrics/{{ app_name }}"
+
+- name: Template Docker Compose file for instance
+  template:
+    src: docker-compose-instance.yml.j2
+    dest: "/opt/victoriametrics/{{ app_name }}/docker-compose.yml"
+    mode: '0644'
+
+- name: Deploy VictoriaMetrics instance via Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "/opt/victoriametrics/{{ app_name }}"
+    state: present

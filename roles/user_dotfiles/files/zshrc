@@ -88,6 +88,11 @@ if [[ -f ~/.zsh_aliases ]] ; then
     source ~/.zsh_aliases
 fi
 
+# Include docker data
+if [[ -f ~/.zsh_docker ]] ; then
+source ~/.zsh_docker
+fi
+
 # Local items not ansible managed
 if [[ -f ~/.zsh_local ]] ; then
     source ~/.zsh_local

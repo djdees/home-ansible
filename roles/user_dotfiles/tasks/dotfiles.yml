@@ -73,6 +73,25 @@
   when: user_shell == 'zsh'
   tags: [dotfiles]
 
+- name: Deploy .zshrc_docker for {{ ansible_user }}
+  ansible.builtin.copy:
+    src: zsh_docker
+    dest: "/home/{{ ansible_user }}/.zsh_docker"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_group }}"
+    mode: "0644"
+  when: user_shell == 'zsh'
+  tags: [dotfiles]
+
+- name: Deploy .zshrc_docker for {{ personal_user }}
+  ansible.builtin.copy:
+    src: zsh_docker
+    dest: "/home/{{ personal_user }}/.zsh_docker"
+    owner: "{{ personal_user }}"
+    group: "{{ personal_user }}"
+    mode: "0644"
+  when: user_shell == 'zsh'
+  tags: [dotfiles]
 - name: Deploy .bash_profile
   ansible.builtin.copy:
     src: bash_profile

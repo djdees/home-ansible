@@ -1,18 +1,20 @@
 ---
 # playbooks/otel-setup.yml
 # Deploys the OpenTelemetry Collector (contrib) to all hosts in otel_nodes.
-# Each host ships its own metrics and journald logs to ClickHouse on hunin.
+# Each host ships its own metrics to VictoriaMetrics on ratatosk.
+# Logs are not currently collected.
 #
-# Currently: muspell (workstation/control) and hunin.
+# Currently: muspell (workstation/control) and ratatosk.
 # Add hosts to the otel_nodes group in hosts.yml to expand.
 #
 # Prerequisites:
-#   - ClickHouse must be running (clickhouse-setup.yml)
-#   - vault_clickhouse_otel_password in vault
+#   - VictoriaMetrics must be running (clickhouse-setup.yml)
+#   - No password required currently.
 #
 # Usage:
 #   ansible-playbook playbooks/otel-setup.yml --ask-vault-pass
 #   ansible-playbook playbooks/otel-setup.yml --limit hunin --ask-vault-pass
+#   ansible-playbook playbooks/otel-setup.yml --limit ratatosk
 #
 # To update config only (no reinstall):
 #   ansible-playbook playbooks/otel-setup.yml --tags configure --ask-vault-pass

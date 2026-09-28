@@ -1,7 +1,18 @@
 ---
 # roles/clickhouse/tasks/dirs.yml
 # Creates the directory layout under the host data path.
-# /data/clickhouse itself already exists on hunin's attached storage.
+# The parent directory (e.g. /data/clickhouse) is created here so the role
+# works on fresh hosts without pre-created storage.
+
+- name: Ensure ClickHouse base directory exists
+  ansible.builtin.file:
+    path: "{{ clickhouse_data_dir | dirname }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  become: true
+  tags: [clickhouse, dirs]
 
 - name: Ensure ClickHouse data subdirectories exist
   ansible.builtin.file:

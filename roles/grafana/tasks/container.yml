@@ -10,6 +10,13 @@
   become: true
   tags: [grafana, container]
 
+- name: Ensure proxy network exists
+  community.docker.docker_network:
+    name: "{{ proxy_network_name | default('proxy_net') }}"
+    state: present
+  become: true
+  tags: [grafana, container, network]
+
 - name: Run Grafana container
   community.docker.docker_container:
     name: "{{ grafana_container_name }}"
@@ -19,13 +26,14 @@
     env:
       GF_SECURITY_ADMIN_USER: "{{ grafana_admin_user }}"
       GF_SECURITY_ADMIN_PASSWORD: "{{ vault_grafana_admin_password }}"
-      GF_INSTALL_PLUGINS: "grafana-clickhouse-datasource"
       GF_USERS_ALLOW_SIGN_UP: "false"
       GF_SERVER_DOMAIN: "grafana.home.arpa"
       GF_SERVER_ROOT_URL: "https://grafana.home.arpa"
     volumes:
       - "{{ grafana_data_dir }}:/var/lib/grafana"
       - "{{ grafana_provisioning_dir }}:/etc/grafana/provisioning"
+    published_ports:
+          - "3000:3000"
     networks:
       - name: "{{ proxy_network_name | default('proxy_net') }}"
   become: false

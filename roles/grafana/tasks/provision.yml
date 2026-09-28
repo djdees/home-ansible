@@ -3,26 +3,15 @@
 # Deploys datasource and dashboard provisioning configs plus the dashboard JSON.
 # Grafana auto-loads everything from the provisioning volume on startup.
 
-- name: Deploy ClickHouse datasource provisioning config
+- name: Deploy grafana prometheus config
   ansible.builtin.template:
-    src: datasource.yaml.j2
-    dest: "{{ grafana_provisioning_dir }}/datasources/clickhouse.yaml"
+    src: datasources/prometheus.yaml.j2
+    dest: "{{ grafana_provisioning_dir }}/datasources/prometheus.yaml"
     owner: "472"
     group: "472"
     mode: '0640'
   become: true
   no_log: "{{ ansible_no_log_tasks | default(true) }}"
-  notify: restart grafana
-  tags: [grafana, provision]
-
-- name: Deploy dashboard provisioning config
-  ansible.builtin.copy:
-    src: provisioning/dashboards/dashboards.yaml
-    dest: "{{ grafana_provisioning_dir }}/dashboards/dashboards.yaml"
-    owner: "472"
-    group: "472"
-    mode: '0644'
-  become: true
   notify: restart grafana
   tags: [grafana, provision]
 
@@ -34,6 +23,27 @@
     group: "472"
     mode: '0755'
   become: true
+  tags: [grafana, provision]
+
+- name: Deploy dashboard provider config
+  ansible.builtin.copy:
+    content: |
+      apiVersion: 1
+      providers:
+        - name: 'Homelab Dashboards'
+          orgId: 1
+          folder: ''
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /etc/grafana/provisioning/dashboards/json
+    dest: "{{ grafana_provisioning_dir }}/dashboards/dashboards.yaml"
+    owner: "472"
+    group: "472"
+    mode: '0644'
+  become: true
+  notify: restart grafana
   tags: [grafana, provision]
 
 - name: Deploy home metrics dashboard JSON

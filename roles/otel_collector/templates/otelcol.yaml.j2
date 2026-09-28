@@ -1,8 +1,14 @@
 # /etc/otelcol-contrib/config.yaml
 # Managed by Ansible (otel_collector role)
-# ${CLICKHOUSE_PASSWORD} is injected at runtime from /etc/otelcol-contrib/otelcol.env
 
 receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
 {% if otel_collect_host_metrics %}
   hostmetrics:
     collection_interval: {{ otel_metrics_interval }}
@@ -18,13 +24,6 @@ receivers:
       network:
       paging:
       processes:
-{% endif %}
-{% if otel_collect_journald_logs %}
-  journald:
-    directory: /var/log/journal
-    priority: info
-    # Add specific units here to filter; empty means all units
-    # units: [sshd, docker, nginx]
 {% endif %}
 {% if otel_collect_docker_stats %}
   docker_stats:
@@ -56,59 +55,12 @@ processors:
         action: upsert
 
 exporters:
-  clickhouse:
-    endpoint: http://{{ otel_clickhouse_host }}:8123
-    database: {{ otel_clickhouse_database }}
-    username: {{ otel_clickhouse_user }}
-    password: "${CLICKHOUSE_PASSWORD}"
-
-    # These match the table names in your new SQL schema
-    logs_table_name: otel_logs
-    traces_table_name: otel_traces
-    metrics_table_name: otel_metrics
-
-    # Use the tuned values we verified
-    timeout: 20s
-    retry_on_failure:
-      enabled: true
-    sending_queue:
-      enabled: true
-      num_consumers: 4
-      queue_size: 1000
-
-  debug:
-    verbosity: basic
-    sampling_initial: 5
-    sampling_thereafter: 100
+  prometheusremotewrite/victoriametrics:
+    endpoint: "http://ratatosk.home.arpa:8428/api/v1/write"
 
 service:
-  telemetry:
-    logs:
-      level: warn
-    metrics:
-      readers:
-        - pull:
-            exporter:
-              prometheus:
-                host: 0.0.0.0
-                port: 8888
-
   pipelines:
-{% if otel_collect_host_metrics or otel_collect_docker_stats %}
     metrics:
-      receivers:
-{% if otel_collect_host_metrics %}
-        - hostmetrics
-{% endif %}
-{% if otel_collect_docker_stats %}
-        - docker_stats
-{% endif %}
+      receivers: [hostmetrics, otlp, docker_stats]
       processors: [batch, resourcedetection, resource]
-      exporters: [clickhouse, debug]
-{% endif %}
-{% if otel_collect_journald_logs %}
-    logs:
-      receivers: [journald]
-      processors: [batch, resourcedetection, resource]
-      exporters: [clickhouse, debug]
-{% endif %}
+      exporters: [prometheusremotewrite/victoriametrics]

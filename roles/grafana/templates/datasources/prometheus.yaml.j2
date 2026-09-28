@@ -1,0 +1,15 @@
+# roles/grafana/templates/datasources/prometheus.yaml.j2
+# Managed by Ansible (grafana role)
+apiVersion: 1
+
+datasources:
+  - name: VictoriaMetrics
+    type: prometheus
+    uid: victoria-metrics
+    isDefault: true
+    access: proxy
+    url: http://ratatosk.home.arpa:8428
+    jsonData:
+      httpMethod: GET
+      manageAlerts: true
+    editable: false

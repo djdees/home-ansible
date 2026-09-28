@@ -1,0 +1,4 @@
+# Docker specific items for the shell env.
+#
+export PATH=$HOME/bin:$PATH
+# export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/docker.sock

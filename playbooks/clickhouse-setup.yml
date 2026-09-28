@@ -1,11 +1,11 @@
 ---
 # playbooks/clickhouse-setup.yml
-# Deploys ClickHouse in Docker on hunin with attached storage and bootstraps
+# Deploys ClickHouse in Docker on rpdb01 with attached storage and bootstraps
 # the OTEL schema (database, tables, ingest user).
 #
 # Prerequisites:
 #   - Docker must be installed (run base-docker.yml first if needed)
-#   - /data/clickhouse must exist on hunin's attached storage
+#   - /data/clickhouse must exist on rpdb01's attached storage
 #   - vault_clickhouse_admin_password and vault_clickhouse_otel_password in vault
 #
 # Usage:
@@ -25,7 +25,7 @@
 #   clickhouse — all of the above
 
 - name: ClickHouse Docker setup
-  hosts: hunin
+  hosts: clickhouse_nodes
   become: true
   roles:
     - clickhouse

@@ -1,0 +1,5 @@
+- name: Process each VictoriaMetrics instance
+  include_tasks: configure_instance.yml
+  loop: "{{ victoriametrics_apps | dict2items }}"
+  loop_control:
+    loop_var: app_item

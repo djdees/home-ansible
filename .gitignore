@@ -5,6 +5,7 @@
 # Vault password file — never commit this
 .ansible_vault_pass
 ~/.ansible_vault_pass
+vault.yml
 
 # Editor noise
 .DS_Store

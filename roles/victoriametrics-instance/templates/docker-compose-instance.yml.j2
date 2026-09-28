@@ -1,0 +1,17 @@
+services:
+  victoriametrics-{{ app_name }}:
+    image: victoriametrics/victoria-metrics:v1.102.0
+    container_name: victoriametrics-{{ app_name }}
+    restart: unless-stopped
+    ports:
+      - "{{ app_config.port }}:8428"
+    volumes:
+      - "/data/victoriametrics/{{ app_name }}:/storage"
+    command:
+      - "--storageDataPath=/storage"
+      - "--retentionPeriod={{ app_config.retention }}"
+{% if app_config.extra_flags is defined %}
+{% for flag in app_config.extra_flags %}
+      - "{{ flag }}"
+{% endfor %}
+{% endif %}

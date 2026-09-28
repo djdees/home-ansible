@@ -1,231 +1,94 @@
 {
-  "uid": "home-metrics-overview",
-  "title": "Home Network - Host Metrics",
-  "description": "CPU, memory, disk, network and load for all otel_nodes. Data from otelcol-contrib hostmetrics receiver via ClickHouse.",
-  "tags": ["home", "otel", "hostmetrics"],
-  "timezone": "browser",
-  "refresh": "1m",
-  "schemaVersion": 38,
-  "time": { "from": "now-3h", "to": "now" },
-  "templating": {
+  "annotations": {
     "list": [
       {
-        "name": "host",
-        "label": "Host",
-        "type": "query",
+        "builtIn": 1,
         "datasource": {
-          "type": "grafana-clickhouse-datasource",
-          "uid": "clickhouse-otel"
+          "type": "grafana",
+          "datasource": "-- Grafana --"
         },
-        "query": "SELECT DISTINCT ResourceAttributes['host.name'] FROM otel.otel_metrics WHERE ResourceAttributes['host.name'] != '' ORDER BY 1",
-        "multi": true,
-        "includeAll": true,
-        "allValue": ".*",
-        "refresh": 2,
-        "sort": 1
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
       }
     ]
   },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
   "panels": [
     {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
       "id": 1,
-      "title": "CPU Usage %",
-      "type": "timeseries",
-      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "clickhouse-otel"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "min": 0,
-          "max": 100,
-          "custom": { "lineWidth": 1, "fillOpacity": 10 }
-        }
-      },
-      "targets": [
-        {
-          "rawSql": "SELECT toStartOfInterval(TimeUnix, INTERVAL 1 MINUTE) AS time, ResourceAttributes['host.name'] AS host, (1 - avg(Value)) * 100 AS cpu_pct FROM otel.otel_metrics WHERE MetricName = 'system.cpu.utilization' AND Attributes['state'] = 'idle' AND ResourceAttributes['host.name'] ILIKE '$host' AND TimeUnix >= now() - INTERVAL 3 HOUR GROUP BY time, host ORDER BY time ASC",
-          "format": "time_series"
-        }
-      ]
+      "title": "Host & Container Metrics",
+      "type": "row"
     },
     {
-      "id": 2,
-      "title": "Memory Usage %",
-      "type": "timeseries",
-      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "clickhouse-otel"
-      },
+      "datasource": { "type": "prometheus", "uid": "victoria-metrics" },
       "fieldConfig": {
         "defaults": {
-          "unit": "percent",
-          "min": 0,
-          "max": 100,
-          "custom": { "lineWidth": 1, "fillOpacity": 10 }
-        }
-      },
-      "targets": [
-        {
-          "rawSql": "SELECT toStartOfInterval(TimeUnix, INTERVAL 1 MINUTE) AS time, ResourceAttributes['host.name'] AS host, avg(Value) * 100 AS mem_pct FROM otel.otel_metrics WHERE MetricName = 'system.memory.utilization' AND Attributes['state'] = 'used' AND ResourceAttributes['host.name'] ILIKE '$host' AND TimeUnix >= now() - INTERVAL 3 HOUR GROUP BY time, host ORDER BY time ASC",
-          "format": "time_series"
-        }
-      ]
-    },
-    {
-      "id": 3,
-      "title": "System Load (1m)",
-      "type": "timeseries",
-      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "clickhouse-otel"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "custom": { "lineWidth": 1, "fillOpacity": 10 }
-        }
-      },
-      "targets": [
-        {
-          "rawSql": "SELECT toStartOfInterval(TimeUnix, INTERVAL 1 MINUTE) AS time, ResourceAttributes['host.name'] AS host, avg(Value) AS load1 FROM otel.otel_metrics WHERE MetricName = 'system.cpu.load_average.1m' AND ResourceAttributes['host.name'] ILIKE '$host' AND TimeUnix >= now() - INTERVAL 3 HOUR GROUP BY time, host ORDER BY time ASC",
-          "format": "time_series"
-        }
-      ]
-    },
-    {
-      "id": 4,
-      "title": "Network Traffic",
-      "type": "timeseries",
-      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "clickhouse-otel"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "binBps",
-          "custom": { "lineWidth": 1, "fillOpacity": 10 }
-        }
-      },
-      "targets": [
-        {
-          "rawSql": "SELECT toStartOfInterval(TimeUnix, INTERVAL 1 MINUTE) AS time, concat(ResourceAttributes['host.name'], ' rx') AS series, avg(Value) AS bytes FROM otel.otel_metrics WHERE MetricName = 'system.network.io' AND Attributes['direction'] = 'receive' AND Attributes['device'] NOT IN ('lo') AND ResourceAttributes['host.name'] ILIKE '$host' AND TimeUnix >= now() - INTERVAL 3 HOUR GROUP BY time, series ORDER BY time ASC",
-          "format": "time_series"
-        },
-        {
-          "rawSql": "SELECT toStartOfInterval(TimeUnix, INTERVAL 1 MINUTE) AS time, concat(ResourceAttributes['host.name'], ' tx') AS series, avg(Value) AS bytes FROM otel.otel_metrics WHERE MetricName = 'system.network.io' AND Attributes['direction'] = 'transmit' AND Attributes['device'] NOT IN ('lo') AND ResourceAttributes['host.name'] ILIKE '$host' AND TimeUnix >= now() - INTERVAL 3 HOUR GROUP BY time, series ORDER BY time ASC",
-          "format": "time_series"
-        }
-      ]
-    },
-    {
-      "id": 5,
-      "title": "Disk Usage %",
-      "type": "bargauge",
-      "gridPos": { "x": 0, "y": 16, "w": 12, "h": 8 },
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "clickhouse-otel"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "min": 0,
-          "max": 100,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 70 },
-              { "color": "red", "value": 90 }
-            ]
-          }
-        }
-      },
-      "options": {
-        "orientation": "horizontal",
-        "reduceOptions": { "calcs": ["lastNotNull"] }
-      },
-      "targets": [
-        {
-          "rawSql": "SELECT concat(ResourceAttributes['host.name'], ':', Attributes['mountpoint']) AS volume, avg(Value) * 100 AS used_pct FROM otel.otel_metrics WHERE MetricName = 'system.filesystem.utilization' AND ResourceAttributes['host.name'] ILIKE '$host' AND TimeUnix >= now() - INTERVAL 10 MINUTE GROUP BY volume ORDER BY volume ASC",
-          "format": "table"
-        }
-      ]
-    },
-    {
-      "id": 6,
-      "title": "Log Events by Host",
-      "type": "timeseries",
-      "gridPos": { "x": 12, "y": 16, "w": 12, "h": 8 },
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "clickhouse-otel"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "custom": { "lineWidth": 1, "fillOpacity": 10, "drawStyle": "bars" }
-        }
-      },
-      "targets": [
-        {
-          "rawSql": "SELECT toStartOfInterval(Timestamp, INTERVAL 1 MINUTE) AS time, ResourceAttributes['host.name'] AS host, count() AS events FROM otel.otel_logs WHERE host ILIKE '$host' AND Timestamp >= now() - INTERVAL 3 HOUR GROUP BY time, host ORDER BY time ASC",
-          "format": "time_series"
-        }
-      ]
-    }
-    {
-      "id": 7,
-      "title": "Current Stats",
-      "type": "stat",
-      "gridPos": { "x": 0, "y": 24, "w": 24, "h": 4 },
-      "datasource": {
-        "type": "grafana-clickhouse-datasource",
-        "uid": "clickhouse-otel"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 70 },
-              { "color": "red", "value": 90 }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": { "id": "byName", "options": "CPU %" },
-            "properties": [{ "id": "unit", "value": "percent" }]
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear"
           },
-          {
-            "matcher": { "id": "byName", "options": "Mem %" },
-            "properties": [{ "id": "unit", "value": "percent" }]
-          }
-        ]
+          "unit": "percent"
+        }
       },
-      "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"] },
-        "orientation": "horizontal",
-        "textMode": "value_and_name"
-      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 1 },
+      "id": 2,
       "targets": [
         {
-          "rawSql": "SELECT ResourceAttributes['host.name'] AS host, (1 - avg(Value)) * 100 AS \"CPU %\" FROM otel.otel_metrics WHERE MetricName = 'system.cpu.utilization' AND Attributes['state'] = 'idle' AND TimeUnix >= now() - INTERVAL 5 MINUTE GROUP BY host ORDER BY host",
-          "format": "table"
-        },
-        {
-          "rawSql": "SELECT ResourceAttributes['host.name'] AS host, avg(Value) * 100 AS \"Mem %\" FROM otel.otel_metrics WHERE MetricName = 'system.memory.utilization' AND Attributes['state'] = 'used' AND TimeUnix >= now() - INTERVAL 5 MINUTE GROUP BY host ORDER BY host",
-          "format": "table"
+          "datasource": { "type": "prometheus", "uid": "victoria-metrics" },
+          "editorMode": "code",
+          "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+          "legendFormat": "{{instance}} CPU Usage",
+          "range": true
         }
-      ]
+      ],
+      "title": "CPU Usage by Host",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "victoria-metrics" },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear"
+          },
+          "unit": "bytes"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 1 },
+      "id": 3,
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "victoria-metrics" },
+          "editorMode": "code",
+          "expr": "node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes",
+          "legendFormat": "{{instance}} Memory Used",
+          "range": true
+        }
+      ],
+      "title": "Memory Usage by Host",
+      "type": "timeseries"
     }
-  ]
+  ],
+  "refresh": "10s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["homelab"],
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Homelab Overview",
+  "uid": "homelab-overview",
+  "version": 1,
+  "weekStart": ""
 }

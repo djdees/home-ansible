@@ -6,8 +6,8 @@
 otel_version: "0.149.0"
 
 # ClickHouse target - the host running the ClickHouse container.
-# Defaults to hunin's inventory address; override in host_vars if needed.
-otel_clickhouse_host: "{{ hostvars['hunin']['ansible_host'] }}"
+# Defaults to rpdb01's inventory address; override in host_vars if needed.
+otel_clickhouse_host: "{{ hostvars['rpdb01']['ansible_host'] }}"
 otel_clickhouse_tcp_port: 9000
 otel_clickhouse_http_port: 8123
 otel_clickhouse_database: "otel"
@@ -17,7 +17,7 @@ otel_clickhouse_user: "otel_ingest"
 # What to collect on this host - all on by default, disable per host in host_vars.
 otel_collect_host_metrics: true
 otel_collect_journald_logs: true
-# Enable on hosts running Docker (e.g. munin, hunin once added):
+# Enable on hosts running Docker (e.g. munin, rpdb01 once added):
 otel_collect_docker_stats: false
 
 # How often to scrape host metrics

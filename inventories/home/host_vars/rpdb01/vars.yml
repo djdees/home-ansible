@@ -1,0 +1,17 @@
+---
+# inventories/home/host_vars/rpdb01/vars.yml
+# rpdb01 - Raspberry Pi 4 (2GB RAM) running Clickhouse
+
+# ── ClickHouse ────────────────────────────────────────────────────────────────
+# Data lives on the attached SSD at /data/clickhouse.
+clickhouse_data_dir:   "/data/clickhouse/data"
+clickhouse_logs_dir:   "/data/clickhouse/logs"
+clickhouse_config_dir: "/data/clickhouse/config"
+
+# rpdb01 has limited RAM (2GB), keeping metrics TTL to 17 days
+clickhouse_metrics_ttl_days: 17
+
+# ── OpenTelemetry Collector ───────────────────────────────────────────────────
+# rpdb01 runs Docker so we want Docker stats in addition to host metrics.
+otel_collect_docker_stats: true
+otel_service_name: "rpdb01"

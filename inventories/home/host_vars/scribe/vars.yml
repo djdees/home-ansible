@@ -29,5 +29,5 @@ apache_sites:
 # OpenTelemetry Collector
 otel_service_name: "scribe"
 otel_collect_host_metrics: true
-otel_collect_journald_logs: true
-otel_collect_docker_stats: false
+otel_collect_journald_logs: false
+otel_collect_docker_stats: true

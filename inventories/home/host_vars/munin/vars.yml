@@ -4,3 +4,8 @@
 # Network managed by netplan + systemd-networkd
 static_ip: "192.168.1.85"
 home_timezone: "America/Chicago"
+
+# ── OpenTelemetry Collector ───────────────────────────────────────────────────
+# hunin runs Docker so we want Docker stats in addition to host metrics.
+otel_collect_docker_stats: true
+otel_service_name: "munin"
