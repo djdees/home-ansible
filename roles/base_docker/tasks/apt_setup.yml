@@ -76,12 +76,15 @@
   become: true
   tags: [docker, install]
 
-- name: Add personal user to docker group
+- name: Add system users to the docker group
   ansible.builtin.user:
-    name: "{{ personal_user }}"
+    name: "{{ user_item.username }}"
     groups: docker
     append: true
   become: true
+  loop: "{{ system_users }}"
+  loop_control:
+    loop_var: user_item
   tags: [docker, install]
 
 - name: Enable and start Docker service

@@ -1,0 +1,64 @@
+---
+# Creates the personal user (djdees), grants passwordless sudo,
+# and copies the SSH public key from the control machine.
+# Runs as the bootstrap user (fixer) via ansible_user in group_vars.
+
+- name: Create user group
+  ansible.builtin.group:
+    name: "{{ user_item.group }}"
+    state: present
+  become: true
+  tags: [base_user, setup]
+
+- name: Create user account
+  ansible.builtin.user:
+    name: "{{ user_item.username }}"
+    group: "{{ user_item.group }}"
+    groups: sudo
+    append: true
+    shell: "{{ user_item.shell }}"
+    create_home: true
+    state: present
+  become: true
+  tags: [base_user, setup]
+
+- name: Grant user passwordless sudo
+  ansible.builtin.copy:
+    dest: "/etc/sudoers.d/010_{{ user_item.username }}-nopasswd"
+    content: "{{ user_item.username }} ALL=(ALL) NOPASSWD: ALL\n"
+    owner: root
+    group: root
+    mode: '0440'
+    validate: /usr/sbin/visudo -cf %s
+  become: true
+  when: user_item.nopasswd_sudo
+  tags: [base_user, setup]
+
+- name: Ensure .ssh directory exists
+  ansible.builtin.file:
+    path: "/home/{{ user_item.username }}/.ssh"
+    state: directory
+    owner: "{{ user_item.username }}"
+    group: "{{ user_item.group }}"
+    mode: '0700'
+  become: true
+  tags: [base_user, setup]
+
+- name: Deploy authorized_keys for user
+  ansible.posix.authorized_key:
+    user: "{{ user_item.username }}"
+    state: present
+    key: "{{ lookup('file', user_item.pubkey_file) }}"
+  become: true
+  when: user_item.deploy_authorized_keys
+  tags: [base_user, setup]
+
+- name: Deploy encrypted GitHub credentials file
+  ansible.builtin.copy:
+    content: "https://{{ vault_github_username }}:{{ vault_github_token }}@github.com\n"
+    dest: "/home/{{ user_item.username }}/.git-credentials"
+    owner: "{{ user_item.username }}"
+    group: "{{ user_item.group }}"
+    mode: '0600'
+  become: true
+  tags: [base_user, setup, git]

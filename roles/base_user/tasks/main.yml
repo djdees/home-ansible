@@ -1,8 +1,7 @@
 ---
-# base_user/tasks/main.yml
-# Creates the personal user (djdees) with passwordless sudo and SSH key.
-# fixer is the Ansible/admin account and is managed separately — it is
-# never removed by this role.
-
-- name: Import personal user setup tasks
-  ansible.builtin.import_tasks: personal_user.yml
+- name: Configure local system users and git credentials
+  ansible.builtin.include_tasks: configure_user.yml
+  loop: "{{ system_users }}"
+  loop_control:
+    loop_var: user_item
+  when: inventory_hostname in groups['dev_nodes']

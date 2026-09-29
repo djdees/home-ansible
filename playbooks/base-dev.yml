@@ -18,8 +18,18 @@
     - base_ssh
     - base_dev
 
-- name: Dev setup for Linux servers and desktops
+- name: Dev setup for Linux servers
   hosts: infra_servers
+  become: true
+  roles:
+    - base_linux
+    - base_user
+    - user_dotfiles
+    - base_ssh
+    - base_dev
+
+- name: Dev setup for Linux desktops
+  hosts: dev_nodes
   become: true
   roles:
     - base_linux

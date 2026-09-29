@@ -23,10 +23,25 @@ ansible_group: fixer
 
 # Bootstrap user created during imaging. Used by Ansible for initial runs.
 bootstrap_user: "fixer"
+bootstrap_user_group: "fixer"
 
 # Personal user — created by the base_user role with passwordless sudo.
 personal_user:       "djdees"
 personal_user_group: "djdees"
+
+system_users:
+  - username: djdees
+    group: djdees
+    shell: "{{ '/usr/bin/zsh' if user_shell == 'zsh' else '/bin/bash' }}"
+    nopasswd_sudo: true
+    deploy_authorized_keys: true
+    pubkey_file: "~/.ssh/id_ed25519.pub"
+  - username: fixer
+    group: fixer
+    shell: /bin/bash
+    nopasswd_sudo: true
+    deploy_authorized_keys: true # Set to false if fixer doesn't need external SSH keys deployed
+    pubkey_file: "~/.ssh/id_ed25519.pub"
 
 # ── SSH ──────────────────────────────────────────────────────────────────────
 ssh_allow_users:
